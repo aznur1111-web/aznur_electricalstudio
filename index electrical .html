@@ -1,0 +1,3529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta
+    name="description"
+    content="Aznur Electrical Studio - offline electrical engineering calculators for power, AC/DC, cables, motors, transformers, batteries, loads and more."
+  >
+  <meta name="theme-color" content="#fafafa">
+  <title>Aznur Electrical Studio</title>
+  <style>
+    :root {
+      --bg: #fafafa;
+      --surface: #ffffff;
+      --surface-2: #f5f5f4;
+      --border: #e7e5e4;
+      --text: #1c1917;
+      --muted: #57534e;
+      --accent: #f59e0b;
+      --accent-hover: #d97706;
+      --success: #10b981;
+      --error: #ef4444;
+      --info: #3b82f6;
+      --warning-bg: #fffbeb;
+      --radius: 8px;
+      --radius-lg: 12px;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Helvetica,
+        Arial,
+        sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+    }
+
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 1px;
+    }
+
+    .container {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 36px 0 50px;
+    }
+
+    header {
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 8px;
+      font-size: clamp(2rem, 5vw, 2.8rem);
+      line-height: 1.1;
+    }
+
+    h2 {
+      margin-bottom: 8px;
+      font-size: 1.35rem;
+    }
+
+    h3 {
+      margin-bottom: 4px;
+      font-size: 1.05rem;
+    }
+
+    h4 {
+      font-size: 0.86rem;
+    }
+
+    .subtitle {
+      max-width: 780px;
+      margin: 0 auto;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding: 10px 12px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+    }
+
+    .topbar-left,
+    .topbar-right,
+    .row,
+    .mode,
+    .tool-tabs,
+    .btn-row,
+    .inline {
+      display: flex;
+      align-items: center;
+    }
+
+    .topbar-left,
+    .topbar-right,
+    .row,
+    .btn-row,
+    .inline {
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .mode {
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .btn {
+      padding: 9px 15px;
+      background: var(--text);
+      color: #fff;
+      border-radius: var(--radius);
+      font-weight: 650;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background: #33302e;
+    }
+
+    .btn.secondary {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn.secondary:hover {
+      background: var(--surface-2);
+    }
+
+    .btn.accent {
+      background: var(--accent);
+    }
+
+    .btn.accent:hover {
+      background: var(--accent-hover);
+    }
+
+    .btn.danger {
+      background: var(--error);
+    }
+
+    .btn.sm {
+      padding: 6px 10px;
+      font-size: 0.82rem;
+    }
+
+    .btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .switch {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 0.82rem;
+      cursor: pointer;
+    }
+
+    .switch input {
+      accent-color: var(--accent);
+    }
+
+    .card {
+      margin-bottom: 18px;
+      padding: 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+    }
+
+    .card-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 16px;
+    }
+
+    .card-head .note {
+      max-width: 740px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    }
+
+    .grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .fg {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      min-width: 0;
+    }
+
+    label,
+    .label {
+      color: var(--muted);
+      font-size: 0.74rem;
+      font-weight: 750;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    input[type="number"],
+    input[type="text"],
+    select {
+      width: 100%;
+      padding: 9px 10px;
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.92rem;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+    }
+
+    .note,
+    .hint,
+    .status,
+    .formula {
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+
+    .formula {
+      padding: 9px 11px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      overflow-wrap: anywhere;
+    }
+
+    .sub {
+      margin: 20px 0 12px;
+      padding-top: 15px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.73rem;
+      font-weight: 750;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .tool-tabs {
+      gap: 7px;
+      margin-bottom: 18px;
+      padding: 5px;
+      overflow-x: auto;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+    }
+
+    .tab {
+      flex: 0 0 auto;
+      padding: 8px 11px;
+      background: transparent;
+      color: var(--muted);
+      border-radius: 7px;
+      font-weight: 650;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: var(--shadow);
+    }
+
+    .tool-panel {
+      display: none;
+    }
+
+    .tool-panel.active {
+      display: block;
+    }
+
+    .result-grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      margin-top: 16px;
+    }
+
+    .result {
+      min-height: 85px;
+      padding: 13px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+
+    .result .r-label {
+      margin-bottom: 4px;
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 750;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .result .r-value {
+      font-size: 1.15rem;
+      font-weight: 750;
+      word-break: break-word;
+    }
+
+    .result.accent {
+      border-color: #fcd34d;
+      background: var(--warning-bg);
+    }
+
+    .result.good .r-value {
+      color: var(--success);
+    }
+
+    .warning {
+      margin-top: 14px;
+      padding: 11px 13px;
+      background: var(--warning-bg);
+      border: 1px solid #fcd34d;
+      border-radius: var(--radius);
+      color: #92400e;
+      font-size: 0.8rem;
+    }
+
+    .danger-note {
+      margin-top: 14px;
+      padding: 11px 13px;
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      border-radius: var(--radius);
+      color: #991b1b;
+      font-size: 0.8rem;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+
+    th,
+    td {
+      padding: 9px 10px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+      white-space: nowrap;
+    }
+
+    th {
+      background: var(--surface-2);
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 750;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .load-list {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      margin-top: 12px;
+    }
+
+    .load-row {
+      display: grid;
+      grid-template-columns: minmax(120px, 2fr) 90px 80px 80px 100px 34px;
+      gap: 7px;
+      align-items: center;
+    }
+
+    .load-row input {
+      min-width: 0;
+    }
+
+    .stat-strip {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+      margin-top: 14px;
+    }
+
+    .stat {
+      padding: 12px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      text-align: center;
+    }
+
+    .stat .small {
+      color: var(--muted);
+      font-size: 0.7rem;
+      font-weight: 750;
+      text-transform: uppercase;
+    }
+
+    .stat strong {
+      display: block;
+      margin-top: 2px;
+      font-size: 1.15rem;
+    }
+
+    .mini-grid {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+    }
+
+    .color-dot {
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+    }
+
+    .history {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      max-height: 240px;
+      overflow: auto;
+    }
+
+    .history-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 9px 11px;
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.82rem;
+    }
+
+    .history-row code {
+      color: var(--text);
+      font-size: 0.8rem;
+      overflow-wrap: anywhere;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    footer {
+      margin-top: 30px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.78rem;
+      text-align: center;
+    }
+
+    #toasts {
+      position: fixed;
+      z-index: 1000;
+      top: 14px;
+      right: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+      width: min(350px, calc(100vw - 28px));
+    }
+
+    .toast {
+      padding: 10px 13px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--success);
+      border-radius: var(--radius);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.10);
+      font-size: 0.82rem;
+    }
+
+    .toast.warn {
+      border-left-color: var(--accent);
+    }
+
+    .toast.err {
+      border-left-color: var(--error);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 3px 7px;
+      background: #fef3c7;
+      color: #92400e;
+      border-radius: 4px;
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 820px) {
+      .grid.two,
+      .grid.three {
+        grid-template-columns: 1fr;
+      }
+
+      .load-row {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+
+      .load-row .load-name {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .container {
+        width: min(100% - 20px, 1180px);
+        padding-top: 22px;
+      }
+
+      .card {
+        padding: 15px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .load-row {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .load-row .load-name {
+        grid-column: 1 / -1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="toasts" aria-live="polite"></div>
+
+  <main class="container">
+    <header>
+      <h1>Aznur Electrical Studio</h1>
+      <p class="subtitle">
+        A privacy-first electrical engineering toolbox: power, AC/DC, three-phase,
+        cables, voltage drop, loads, motors, transformers, batteries, capacitors,
+        resistors, lighting, energy cost and more - directly in your browser.
+      </p>
+    </header>
+
+    <div class="topbar">
+      <div class="topbar-left">
+        <span class="badge">Offline-ready</span>
+        <span class="status" id="browserStatus">Calculations run locally.</span>
+      </div>
+      <div class="topbar-right">
+        <label class="switch">
+          <input id="rememberValues" type="checkbox" checked>
+          Remember values
+        </label>
+        <button class="btn secondary sm" id="clearValues">Clear saved values</button>
+      </div>
+    </div>
+
+    <div class="mode">
+      <button class="btn" id="modeCalc">Calculators</button>
+      <button class="btn secondary" id="modeRef">Reference</button>
+    </div>
+
+    <section id="calculatorApp">
+      <nav class="tool-tabs" aria-label="Electrical calculator sections">
+        <button class="tab active" data-panel="quick">Quick</button>
+        <button class="tab" data-panel="acdc">AC / DC</button>
+        <button class="tab" data-panel="power">Power & Energy</button>
+        <button class="tab" data-panel="loads">Load Schedule</button>
+        <button class="tab" data-panel="cables">Cables</button>
+        <button class="tab" data-panel="motors">Motors</button>
+        <button class="tab" data-panel="transformers">Transformers</button>
+        <button class="tab" data-panel="protection">Protection</button>
+        <button class="tab" data-panel="battery">Battery / UPS</button>
+        <button class="tab" data-panel="passive">R / C / L</button>
+        <button class="tab" data-panel="signals">Signals</button>
+        <button class="tab" data-panel="lighting">Lighting</button>
+        <button class="tab" data-panel="converter">Units</button>
+      </nav>
+
+      <!-- QUICK -->
+      <section class="tool-panel active" id="panel-quick">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Electrical Quick Calculator</h2>
+              <p class="note">
+                Put in any two familiar values and calculate the connected electrical quantities.
+              </p>
+            </div>
+          </div>
+
+          <div class="grid three">
+            <div class="fg">
+              <label for="quickV">Voltage (V)</label>
+              <input id="quickV" type="number" min="0" step="any" value="230">
+            </div>
+            <div class="fg">
+              <label for="quickI">Current (A)</label>
+              <input id="quickI" type="number" min="0" step="any" value="5">
+            </div>
+            <div class="fg">
+              <label for="quickR">Resistance (Ω)</label>
+              <input id="quickR" type="number" min="0" step="any" value="46">
+            </div>
+            <div class="fg">
+              <label for="quickP">Real Power (W)</label>
+              <input id="quickP" type="number" min="0" step="any" value="1150">
+            </div>
+            <div class="fg">
+              <label for="quickPF">Power Factor</label>
+              <input id="quickPF" type="number" min="0.01" max="1" step="0.01" value="1">
+            </div>
+            <div class="fg">
+              <label for="quickPhase">System</label>
+              <select id="quickPhase">
+                <option value="dc">DC</option>
+                <option value="single">Single phase AC</option>
+                <option value="three" selected>Three phase AC</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="btn-row" style="margin-top: 14px">
+            <button class="btn accent" id="quickSolve">Solve</button>
+            <button class="btn secondary" id="quickClear">Reset</button>
+          </div>
+
+          <div class="result-grid" id="quickResults"></div>
+          <div class="formula" id="quickFormula">P = √3 × V<sub>LL</sub> × I × PF</div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Ohm's Law</h2>
+              <p class="note">Any two of V, I and R determine the third.</p>
+            </div>
+          </div>
+          <div class="grid three">
+            <div class="fg">
+              <label for="ohmV">Voltage (V)</label>
+              <input id="ohmV" type="number" min="0" step="any" placeholder="e.g. 12">
+            </div>
+            <div class="fg">
+              <label for="ohmI">Current (A)</label>
+              <input id="ohmI" type="number" min="0" step="any" placeholder="e.g. 2">
+            </div>
+            <div class="fg">
+              <label for="ohmR">Resistance (Ω)</label>
+              <input id="ohmR" type="number" min="0" step="any" placeholder="e.g. 6">
+            </div>
+          </div>
+          <div class="btn-row" style="margin-top: 14px">
+            <button class="btn accent" id="ohmSolve">Solve</button>
+            <button class="btn secondary" id="ohmFillPower">Also calculate power</button>
+          </div>
+          <div class="result-grid" id="ohmResults"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Standard Electrical Conversions</h2>
+              <p class="note">Useful cross-checks between W, VA, VAR, Wh, Ah and electrical units.</p>
+            </div>
+          </div>
+          <div class="grid three">
+            <div class="fg">
+              <label for="convValue">Value</label>
+              <input id="convValue" type="number" step="any" value="1000">
+            </div>
+            <div class="fg">
+              <label for="convFrom">From</label>
+              <select id="convFrom"></select>
+            </div>
+            <div class="fg">
+              <label for="convTo">To</label>
+              <select id="convTo"></select>
+            </div>
+          </div>
+          <div class="result-grid">
+            <div class="result accent">
+              <div class="r-label">Result</div>
+              <div class="r-value" id="convResult">-</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- AC / DC -->
+      <section class="tool-panel" id="panel-acdc">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>AC / DC Power</h2>
+              <p class="note">
+                Calculate RMS/peak relationships, real/reactive/apparent power and current.
+              </p>
+            </div>
+          </div>
+          <div class="grid three">
+            <div class="fg">
+              <label for="acVoltage">Voltage</label>
+              <input id="acVoltage" type="number" min="0" step="any" value="230">
+            </div>
+            <div class="fg">
+              <label for="acCurrent">Current</label>
+              <input id="acCurrent" type="number" min="0" step="any" value="10">
+            </div>
+            <div class="fg">
+              <label for="acPf">Power Factor</label>
+              <input id="acPf" type="number" min="0.01" max="1" step="0.01" value="0.8">
+            </div>
+            <div class="fg">
+              <label for="acFreq">Frequency (Hz)</label>
+              <input id="acFreq" type="number" min="0.001" step="any" value="50">
+            </div>
+            <div class="fg">
+              <label for="acType">System</label>
+              <select id="acType">
+                <option value="single">Single phase</option>
+                <option value="three">Three phase</option>
+                <option value="dc">DC</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label for="acVll">Line-to-line V for 3φ</label>
+              <input id="acVll" type="number" min="0" step="any" value="400">
+            </div>
+          </div>
+          <div class="result-grid" id="acResults"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>RMS ↔ Peak ↔ Peak-to-Peak</h2>
+              <p class="note">For a sinusoidal waveform: V<sub>peak</sub> = √2 × V<sub>RMS</sub>.</p>
+            </div>
+          </div>
+          <div class="grid three">
+            <div class="fg">
+              <label for="rmsValue">Value</label>
+              <input id="rmsValue" type="number" min="0" step="any" value="230">
+            </div>
+            <div class="fg">
+              <label for="rmsMode">Value is</label>
+              <select id="rmsMode">
+                <option value="rms">RMS</option>
+                <option value="peak">Peak</option>
+                <option value="pp">Peak-to-peak</option>
+              </select>
+            </div>
+          </div>
+          <div class="result-grid" id="rmsResults"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Three-Phase Star / Delta Relationships</h2>
+              <p class="note">Balanced system relationships for common voltage/current conversions.</p>
+            </div>
+          </div>
+          <div class="grid three">
+            <div class="fg">
+              <label for="threeVll">Line Voltage V<sub>LL</sub> (V)</label>
+              <input id="threeVll" type="number" min="0" step="any" value="400">
+            </div>
+            <div class="fg">
+              <label for="threeIline">Line Current (A)</label>
+              <input id="threeIline" type="number" min="0" step="any" value="10">
+            </div>
+            <div class="fg">
+              <label for="threeConnection">Load connection</label>
+              <select id="threeConnection">
+                <option value="star">Star (Y)</option>
+                <option value="delta">Delta (Δ)</option>
+              </select>
+            </div>
+          </div>
+          <div class="result-grid" id="threeResults"></div>
+        </div>
+      </section>
+
+      <!-- POWER & ENERGY -->
+      <section class="tool-panel" id="panel-power">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Power Triangle</h2>
+              <p class="note">P, Q, S, PF and phase angle from any compatible pair.</p>
+            </div>
+          </div>
+          <div class="grid three">
+            <div class="fg">
+              <label for="triP">Real Power P (kW)</label>
+              <input id="triP" type="number" min="0" step="any" value="10">
+            </div>
+            <div class="fg">
+              <label for="triQ">Reactive Power Q (kvar)</label>
+              <input id="triQ" type="number" min="0" step="any" value="7.5">
+            </div>
+            <div class="fg">
+              <label for="triS">Apparent Power S (kVA)</label>
+              <input id="triS" type="number" min="0" step="any" value="12.5">
+            </div>
+          </div>
+          <div class="btn-row" style="margin-top: 14px">
+            <button class="btn accent" id="triSolve">Solve from supplied values</button>
+          </div>
+          <div class="result-grid" id="triResults"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Energy & Electricity Cost</h2>
+              <p class="note">Build a simple appliance cost estimate from power, hours, days and tariff.</p>
+            </div>
+          </div>
+          <div class="grid three">
+            <div class="fg">
+              <label for="energyPower">Load Power (kW)</label>
+              <input id="energyPower" type="number" min="0" step="any" value="1">
+            </div>
+            <div class="fg">
+              <label for="energyHours">Hours / day</label>
+              <input id="energyHours" type="number" min="0" step="any" value="8">
+            </div>
+            <div class="fg">
+              <label for="energyDays">Days / month</label>
+              <input id="energyDays" type="number" min="0" step="any" value="30">
+            </div>
+            <div class="fg">
+              <label for="energyTariff">Tariff (৳ / kWh)</label>
+              <input id="energyTariff" type="number" min="0" step="any" value="12">
+            </div>
+            <div class="fg">
+              <label for="energyEfficiency">Utilization / load factor (%)</label>
+              <input id="energyEfficiency" type="number" min="0" max="100" step="1" value="100">
+            </div>
+            <div class="fg">
+              <label for="energyFixed">Monthly fixed charge (৳)</label>
+              <input id="energyFixed" type="number" min="0" step="any" value="0">
+            </div>
+          </div>
+          <div class="result-grid" id="energyResults"></div>
+          <p class="hint" style="margin-top: 12px">
+            Tariff is intentionally user-editable because utility tariffs and billing structures can change.
+          </p>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Heating Element</h2>
+              <p class="note">Useful for heaters, immersion elements and resistive loads.</p>
+            </div>
+          </div>
+          <div class="grid three">
+            <div class="fg">
+              <label for="heatV">Voltage (V)</label>
+              <input id="heatV" type="number" min="0" step="any" value="230">
+            </div>
+            <div class="fg">
+              <label for="heatR">Resistance (Ω)</label>
+              <input id="heatR" type="number" min="0" step="any" value="46">
+            </div>
+            <div class="fg">
+              <label for="heatTime">Run time (h)</label>
+              <input id="heatTime" type="number" min="0" step="any" value="1">
+            </div>
+          </div>
+          <div class="result-grid" id="heatResults"></div>
+        </div>
+      </section>
+
+      <!-- LOAD SCHEDULE -->
+      <section class="tool-panel" id="panel-loads">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Load Schedule Builder</h2>
+              <p class="note">
+                Add connected loads and estimate diversified kW, kVA and current for planning.
+              </p>
+            </div>
+            <div class="btn-row">
+              <button class="btn accent sm" id="addLoad">Add Load</button>
+              <button class="btn secondary sm" id="clearLoads">Clear</button>
+            </div>
+          </div>
+
+          <div class="grid three">
+            <div class="fg">
+              <label for="loadVoltage">Supply Voltage (V)</label>
+              <input id="loadVoltage" type="number" min="1" step="any" value="230">
+            </div>
+            <div class="fg">
+              <label for="loadPhase">System</label>
+              <select id="loadPhase">
+                <option value="single">Single phase</option>
+                <option value="three">Three phase</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label for="loadDemand">Overall demand factor (%)</label>
+              <input id="loadDemand" type="number" min="0" max="100" step="1" value="80">
+            </div>
+          </div>
+
+          <div class="load-list" id="loadList"></div>
+          <div class="stat-strip" id="loadStats"></div>
+          <div class="warning">
+            This is a planning calculator. Actual demand, diversity, motor starting current,
+            cable ampacity, protective-device coordination and code requirements must be checked
+            from the project's applicable standards and installation conditions.
+          </div>
+        </div>
+      </section>
+
+      <!-- CABLES -->
+      <section class="tool-panel" id="panel-cables">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Voltage Drop & Cable Resistance</h2>
+              <p class="note">
+                Approximate conductor resistance and voltage drop from length, current, material and cross-section.
+              </p>
+            </div>
+          </div>
+          <div class="grid three">
+            <div class="fg">
+              <label for="cableVoltage">System Voltage (V)</label>
+              <input id="cableVoltage" type="number" min="1" step="any" value="230">
+            </div>
+            <div class="fg">
+              <label for="cableCurrent">Load Current (A)</label>
+              <input id="cableCurrent" type="number" min="0" step="any" value="20">
+            </div>
+            <div class="fg">
+              <label for="cableLength">One-way Length (m)</label>
+              <input id="cableLength" type="number" min="0" step="any" value="30">
+            </div>
+            <div class="fg">
+              <label for="cableSize">Conductor Area (mm²)</label>
+              <select id="cableSize"></select>
+            </div>
+            <div class="fg">
+              <label for="cableMaterial">Conductor</label>
+              <select id="cableMaterial">
+                <option value="copper">Copper</option>
+                <option value="aluminium">Aluminium</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label for="cableSystem">Circuit</label>
+              <select id="cableSystem">
+                <option value="dc">DC / 2-wire</option>
+                <option value="single">Single phase AC</option>
+                <option value="three">Three phase AC</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label for="cablePF">Power Factor</label>
+              <input id="cablePF" type="number" min="0.1" max="1" step="0.01" value="0.9">
+            </div>
+            <div class="fg">
+              <label for="cableReactance">Reactance (Ω/km)</label>
+              <input id="cableReactance" type="number" min="0" step="any" value="0.08">
+            </div>
+            <div class="fg">
+              <label for="cableTempFactor">Resistance temperature factor</label>
+              <input id="cableTempFactor" type="number" min="0.5" step="any" value="1">
+            </div>
+          </div>
+          <div class="result-grid" id="cableResults"></div>
+          <div class="formula">R ≈ ρ × L / A ·  ΔV₍3φ₎ ≈ √3 × I × (R cosφ + X sinφ) × L</div>
+          <div class="warning">
+            Voltage-drop output is an electrical calculation, not an ampacity/cable-selection certification.
+            Thermal ampacity depends on installation method, insulation, ambient temperature, grouping,
+            soil/air conditions, conductor construction and the applicable wiring code.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Cable Size From Voltage-Drop Target</h2>
+              <p class="note">Calculates a theoretical minimum cross-section from your chosen voltage-drop limit.</p>
+            </div>
+          </div>
+          <div class="grid three">
+            <div class="fg">
+              <label for="sizingV">Supply Voltage (V)</label>
+              <input id="sizingV" type="number" min="1" step="any" value="230">
+            </div>
+            <div class="fg">
+              <label for="sizingI">Current (A)</label>
+              <input id="sizingI" type="number" min="0" step="any" value="20">
+            </div>
+            <div class="fg">
+              <label for="sizingLength">One-way Length (m)</label>
+              <input id="sizingLength" type="number" min="0" step="any" value="30">
+            </div>
+            <div class="fg">
+              <label for="sizingDrop">Maximum Drop (%)</label>
+              <input id="sizingDrop" type="number" min="0.1" step="any" value="3">
+            </div>
+            <div class="fg">
+              <label for="sizingMaterial">Conductor</label>
+              <select id="sizingMaterial">
+                <option value="copper">Copper</option>
+                <option value="aluminium">Aluminium</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label for="sizingSystem">Circuit</label>
+              <select id="sizingSystem">
+                <option value="dc">DC / single phase 2-wire</option>
+                <option value="three">Three phase</option>
+              </select>
+            </div>
+          </div>
+          <div class="result-grid" id="sizingResults"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>AWG ↔ mm²</h2>
+              <p class="note">Common conductor sizes for quick engineering reference.</p>
+            </div>
+          </div>
+          <div class="grid two">
+            <div class="fg">
+              <label for="awgInput">AWG</label>
+              <select id="awgInput"></select>
+            </div>
+            <div class="fg">
+              <label for="awgMetric">Metric Area</label>
+              <select id="awgMetric"></select>
+            </div>
+          </div>
+          <div class="result-grid" id="awgResults"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Busbar Cross-Section</h2>
+              <p class="note">Required area from current and an engineer-chosen current density.</p>
+            </div>
+          </div>
+          <div class="grid three">
+            <div class="fg">
+              <label for="busCurrent">Current (A)</label>
+              <input id="busCurrent" type="number" min="0" step="any" value="400">
+            </div>
+            <div class="fg">
+              <label for="busDensity">Allowable Current Density (A/mm²)</label>
+              <input id="busDensity" type="number" min="0.01" step="any" value="1.2">
+            </div>
+            <div class="fg">
+              <label for="busWidth">Preferred Width (mm)</label>
+              <input id="busWidth" type="number" min="0.1" step="any" value="50">
+            </div>
+          </div>
+          <div class="result-grid" id="busResults"></div>
+          <p class="hint" style="margin-top: 10px">
+            Current density is highly installation-dependent; enter the value required by your design standard.
+          </p>
+        </div>
+      </section>
+
+      <!-- MOTORS -->
+      <section class="tool-panel" id="panel-motors">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Motor Electrical & Mechanical</h2>
+              <p class="note">Estimate input power, current, torque and speed relationships.</p>
+            </div>
+          </div>
+          <div class="grid three">
+            <div class="fg">
+              <label for="motorPower">Mechanical Output (kW)</label>
+              <input id="motorPower" type="number" min="0" step="any" value="7.5">
+            </div>
+            <div class="fg">
+              <label for="motorEff">Efficiency (%)</label>
+              <input id="motorEff" type="number" min="1" max="100" step="0.1" value="90">
+            </div>
+            <div class="fg">
+              <label for="motorPf">Power Factor</label>
+              <input id="motorPf" type="number" min="0.1" max="1" step="0.01" value="0.85">
+            </div>
+            <div class="fg">
+              <label for="motorVoltage">Line Voltage (V)</label>
+              <input id="motorVoltage" type="number" min="1" step="any" value="400">
+            </div>
+            <div class="fg">
+              <label for="motorFreq">Frequency (Hz)</label>
+              <input id="motorFreq" type="number" min="0" step="any" value="50">
+            </div>
+            <div class="fg">
+              <label for="motorPole">Poles</label>
+              <select id="motorPole">
+                <option>2</option>
+                <option selected>4</option>
+                <option>6</option>
+                <option>8</option>
+                <option>10</option>
+                <option>12</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label for="motorSlip">Slip (%)</label>
+              <input id="motorSlip" type="number" min="0" max="30" step="0.1" value="3">
+            </div>
+            <div class="fg">
+              <label for="motorStartup">Starting multiplier</label>
+              <input id="motorStartup" type="number" min="1" step="0.1" value="6">
+            </div>
+          </div>
+          <div class="result-grid" id="motorResults"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Motor Torque</h2>
+              <p class="note">Torque from power and rotational speed.</p>
+            </div>
+          </div>
+          <div class="grid two">
+            <div class="fg">
+              <label for="torquePower">Power (kW)</label>
+              <input id="torquePower" type="number" min="0" step="any" value="7.5">
+            </div>
+            <div class="fg">
+              <label for="torqueRPM">Speed (RPM)</label>
+              <input id="torqueRPM" type="number" min="0.1" step="any" value="1450">
+            </div>
+          </div>
+          <div class="result-grid" id="torqueResults"></div>
+          <div class="formula">T (N·m) = 9550 × P(kW) / RPM</div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Motor Starting / Inrush</h2>
+              <p class="note">Simple estimate from full-load current and a multiplier.</p>
+            </div>
+          </div>
+          <div class="grid two">
+            <div class="fg">
+              <label for="inrushFla">Full-load Current (A)</label>
+              <input id="inrushFla" type="number" min="0" step="any" value="14">
+            </div>
+            <div class="fg">
+              <label for="inrushMultiplier">Starting multiplier</label>
+              <input id="inrushMultiplier" type="number" min="1" step="0.1" value="6">
+            </div>
+          </div>
+          <div class="result-grid" id="inrushResults"></div>
+        </div>
+      </section>
+
+      <!-- TRANSFORMERS -->
+      <section class="tool-panel" id="panel-transformers">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Transformer Sizing</h2>
+              <p class="note">Apparent power and primary/secondary current estimation.</p>
+            </div>
+          </div>
+          <div class="grid three">
+            <div class="fg">
+              <label for="txKva">Transformer Rating (kVA)</label>
+              <input id="txKva" type="number" min="0" step="any" value="100">
+            </div>
+            <div class="fg">
+              <label for="txPrimary">Primary Voltage (V)</label>
+              <input id="txPrimary" type="number" min="1" step="any" value="11000">
+            </div>
+            <div class="fg">
+              <label for="txSecondary">Secondary Voltage (V)</label>
+              <input id="txSecondary" type="number" min="1" step="any" value="400">
+            </div>
+            <div class="fg">
+              <label for="txPhase">System</label>
+              <select id="txPhase">
+                <option value="single">Single phase</option>
+                <option value="three" selected>Three phase</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label for="txEff">Efficiency (%)</label>
+              <input id="txEff" type="number" min="1" max="100" step="0.1" value="97">
+            </div>
+            <div class="fg">
+              <label for="txPf">Load PF</label>
+              <input id="txPf" type="number" min="0.1" max="1" step="0.01" value="0.9">
+            </div>
+          </div>
+          <div class="result-grid" id="txResults"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Transformer Turns / Voltage Ratio</h2>
+              <p class="note">Ideal transformer ratio for voltage and turns.</p>
+            </div>
+          </div>
+          <div class="grid three">
+            <div class="fg">
+              <label for="ratioV1">Primary Voltage</label>
+              <input id="ratioV1" type="number" min="0" step="any" value="230">
+            </div>
+            <div class="fg">
+              <label for="ratioV2">Secondary Voltage</label>
+              <input id="ratioV2" type="number" min="0" step="any" value="24">
+            </div>
+            <div class="fg">
+              <label for="ratioN1">Primary Turns</label>
+              <input id="ratioN1" type="number" min="0" step="any" value="1150">
+            </div>
+          </div>
+          <div class="result-grid" id="ratioResults"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Fault Current From Impedance</h2>
+              <p class="note">Basic symmetrical prospective current from voltage and equivalent impedance.</p>
+            </div>
+          </div>
+          <div class="grid three">
+            <div class="fg">
+              <label for="faultV">Voltage (V)</label>
+              <input id="faultV" type="number" min="0" step="any" value="400">
+            </div>
+            <div class="fg">
+              <label for="faultZ">Equivalent Impedance (Ω)</label>
+              <input id="faultZ" type="number" min="0" step="any" value="0.05">
+            </div>
+            <div class="fg">
+              <label for="faultPhase">System</label>
+              <select id="faultPhase">
+                <option value="single">Single phase / L-N</option>
+                <option value="three" selected>Three phase / L-L</option>
+              </select>
+            </div>
+          </div>
+          <div class="result-grid" id="faultResults"></div>
+          <div class="danger-note">
+            This is a simplified impedance calculation, not a protection-setting or short-circuit study.
+            Real fault levels require source, transformer, feeder, sequence/network impedance, X/R,
+            conductor temperature and the applicable protection standard.
+          </div>
+        </div>
+      </section>
+
+      <!-- PROTECTION -->
+      <section class="tool-panel" id="panel-protection">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Breaker / Fuse Reference Sizing</h2>
+              <p class="note">Choose a reference device rating at or above a calculated planning current.</p>
+            </div>
+          </div>
+          <div class="grid three">
+            <div class="fg">
+              <label for="protectLoad">Design Load Current (A)</label>
+              <input id="protectLoad" type="number" min="0" step="any" value="18">
+            </div>
+            <div class="fg">
+              <label for="protectContinuous">Continuous Load (%)</label>
+              <input id="protectContinuous" type="number" min="0" max="200" step="1" value="100">
+            </div>
+            <div class="fg">
+              <label for="protectMargin">Design Margin (%)</label>
+              <input id="protectMargin" type="number" min="0" step="1" value="25">
+            </div>
+          </div>
+          <div class="result-grid" id="protectResults"></div>
+          <div class="warning">
+            This is a planning reference only. Final protective-device selection requires conductor ampacity,
+            overload characteristics, fault current, disconnection time, coordination, interrupting rating and the applicable code.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Generator / Alternator Size</h2>
+              <p class="note">Convert real load into kVA and estimate full-load current.</p>
+            </div>
+          </div>
+          <div class="grid three">
+            <div class="fg">
+              <label for="genKw">Real Load (kW)</label>
+              <input id="genKw" type="number" min="0" step="any" value="30">
+            </div>
+            <div class="fg">
+              <label for="genPf">Load Power Factor</label>
+              <input id="genPf" type="number" min="0.1" max="1" step="0.01" value="0.8">
+            </div>
+            <div class="fg">
+              <label for="genMargin">Sizing Margin (%)</label>
+              <input id="genMargin" type="number" min="0" step="1" value="20">
+            </div>
+            <div class="fg">
+              <label for="genVoltage">Line Voltage (V)</label>
+              <input id="genVoltage" type="number" min="1" step="any" value="400">
+            </div>
+            <div class="fg">
+              <label for="genPhase">System</label>
+              <select id="genPhase">
+                <option value="single">Single phase</option>
+                <option value="three" selected>Three phase</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label for="genSpeed">Alternator Speed (RPM)</label>
+              <input id="genSpeed" type="number" min="0" step="any" value="1500">
+            </div>
+          </div>
+          <div class="result-grid" id="genResults"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Conductor Energy / Material</h2>
+              <p class="note">Estimate conductor resistance, loss and approximate metal mass.</p>
+            </div>
+          </div>
+          <div class="grid three">
+            <div class="fg">
+              <label for="massLength">Length (m)</label>
+              <input id="massLength" type="number" min="0" step="any" value="100">
+            </div>
+            <div class="fg">
+              <label for="massArea">Area (mm²)</label>
+              <input id="massArea" type="number" min="0.01" step="any" value="10">
+            </div>
+            <div class="fg">
+              <label for="massCurrent">Current (A)</label>
+              <input id="massCurrent" type="number" min="0" step="any" value="40">
+            </div>
+            <div class="fg">
+              <label for="massMaterial">Material</label>
+              <select id="massMaterial">
+                <option value="copper">Copper</option>
+                <option value="aluminium">Aluminium</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label for="massTime">Operating Time (h)</label>
+              <input id="massTime" type="number" min="0" step="any" value="8">
+            </div>
+          </div>
+          <div class="result-grid" id="massResults"></div>
+        </div>
+      </section>
+
+      <!-- BATTERY / UPS -->
+      <section class="tool-panel" id="panel-battery">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Battery Runtime & Capacity</h2>
+              <p class="note">Estimate energy, runtime and DC current with efficiency and usable-depth assumptions.</p>
+            </div>
+          </div>
+          <div class="grid three">
+            <div class="fg">
+              <label for="batV">Battery Voltage (V)</label>
+              <input id="batV" type="number" min="0.1" step="any" value="48">
+            </div>
+            <div class="fg">
+              <label for="batAh">Capacity (Ah)</label>
+              <input id="batAh" type="number" min="0" step="any" value="100">
+            </div>
+            <div class="fg">
+              <label for="batLoad">Load (W)</label>
+              <input id="batLoad" type="number" min="0" step="any" value="1000">
+            </div>
+            <div class="fg">
+              <label for="batEff">Inverter / system efficiency (%)</label>
+              <input id="batEff" type="number" min="1" max="100" step="0.1" value="90">
+            </div>
+            <div class="fg">
+              <label for="batDod">Usable depth (%)</label>
+              <input id="batDod" type="number" min="1" max="100" step="1" value="80">
+            </div>
+            <div class="fg">
+              <label for="batVoltageNom">Battery current limit (A)</label>
+              <input id="batVoltageNom" type="number" min="0" step="any" value="0">
+            </div>
+          </div>
+          <div class="result-grid" id="batResults"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Battery Series / Parallel</h2>
+              <p class="note">Build a bank from identical batteries.</p>
+            </div>
+          </div>
+          <div class="grid three">
+            <div class="fg">
+              <label for="bankV">Battery Voltage (V)</label>
+              <input id="bankV" type="number" min="0.1" step="any" value="12">
+            </div>
+            <div class="fg">
+              <label for="bankAh">Battery Capacity (Ah)</label>
+              <input id="bankAh" type="number" min="0" step="any" value="200">
+            </div>
+            <div class="fg">
+              <label for="bankSeries">Series count</label>
+              <input id="bankSeries" type="number" min="1" step="1" value="4">
+            </div>
+            <div class="fg">
+              <label for="bankParallel">Parallel strings</label>
+              <input id="bankParallel" type="number" min="1" step="1" value="2">
+            </div>
+            <div class="fg">
+              <label for="bankLoad">Desired load (W)</label>
+              <input id="bankLoad" type="number" min="0" step="any" value="3000">
+            </div>
+          </div>
+          <div class="result-grid" id="bankResults"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>UPS / Inverter Size</h2>
+              <p class="note">Convert load watts and PF into VA and add a design margin.</p>
+            </div>
+          </div>
+          <div class="grid three">
+            <div class="fg">
+              <label for="upsW">Load Power (W)</label>
+              <input id="upsW" type="number" min="0" step="any" value="1500">
+            </div>
+            <div class="fg">
+              <label for="upsPf">Power Factor</label>
+              <input id="upsPf" type="number" min="0.1" max="1" step="0.01" value="0.8">
+            </div>
+            <div class="fg">
+              <label for="upsMargin">Design Margin (%)</label>
+              <input id="upsMargin" type="number" min="0" step="1" value="25">
+            </div>
+          </div>
+          <div class="result-grid" id="upsResults"></div>
+        </div>
+      </section>
+
+      <!-- R / C / L -->
+      <section class="tool-panel" id="panel-passive">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Resistor Series / Parallel</h2>
+              <p class="note">Enter up to six resistor values.</p>
+            </div>
+          </div>
+          <div class="mini-grid" id="resistorInputs"></div>
+          <div class="btn-row" style="margin-top: 14px">
+            <button class="btn accent" id="resistorSolve">Calculate</button>
+          </div>
+          <div class="result-grid" id="resistorResults"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Capacitor Series / Parallel</h2>
+              <p class="note">Enter up to six capacitor values in μF.</p>
+            </div>
+          </div>
+          <div class="mini-grid" id="capacitorInputs"></div>
+          <div class="btn-row" style="margin-top: 14px">
+            <button class="btn accent" id="capacitorSolve">Calculate</button>
+          </div>
+          <div class="result-grid" id="capacitorResults"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Power-Factor Correction</h2>
+              <p class="note">Capacitor bank kVAr required to move from one PF to another.</p>
+            </div>
+          </div>
+          <div class="grid three">
+            <div class="fg">
+              <label for="pfcKw">Real Power (kW)</label>
+              <input id="pfcKw" type="number" min="0" step="any" value="50">
+            </div>
+            <div class="fg">
+              <label for="pfcFrom">Existing PF</label>
+              <input id="pfcFrom" type="number" min="0.1" max="1" step="0.01" value="0.75">
+            </div>
+            <div class="fg">
+              <label for="pfcTo">Target PF</label>
+              <input id="pfcTo" type="number" min="0.1" max="1" step="0.01" value="0.95">
+            </div>
+            <div class="fg">
+              <label for="pfcVoltage">Line Voltage (V)</label>
+              <input id="pfcVoltage" type="number" min="1" step="any" value="400">
+            </div>
+            <div class="fg">
+              <label for="pfcPhase">System</label>
+              <select id="pfcPhase">
+                <option value="single">Single phase</option>
+                <option value="three" selected>Three phase</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label for="pfcFreq">Frequency (Hz)</label>
+              <input id="pfcFreq" type="number" min="0" step="any" value="50">
+            </div>
+          </div>
+          <div class="result-grid" id="pfcResults"></div>
+          <div class="warning">
+            Real installations also require harmonic assessment, switching method, detuning/reactor selection,
+            voltage tolerance and equipment-specific capacitor ratings.
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>RC / RL Time Constant</h2>
+              <p class="note">First-order transient timing and cutoff frequency.</p>
+            </div>
+          </div>
+          <div class="grid three">
+            <div class="fg">
+              <label for="tauR">Resistance (Ω)</label>
+              <input id="tauR" type="number" min="0" step="any" value="1000">
+            </div>
+            <div class="fg">
+              <label for="tauC">Capacitance (μF)</label>
+              <input id="tauC" type="number" min="0" step="any" value="100">
+            </div>
+            <div class="fg">
+              <label for="tauL">Inductance (mH)</label>
+              <input id="tauL" type="number" min="0" step="any" value="100">
+            </div>
+          </div>
+          <div class="result-grid" id="tauResults"></div>
+        </div>
+      </section>
+
+      <!-- SIGNALS -->
+      <section class="tool-panel" id="panel-signals">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Frequency / Period / Angular Frequency</h2>
+              <p class="note">Convert among f, T and ω.</p>
+            </div>
+          </div>
+          <div class="grid three">
+            <div class="fg">
+              <label for="freqValue">Value</label>
+              <input id="freqValue" type="number" min="0" step="any" value="50">
+            </div>
+            <div class="fg">
+              <label for="freqMode">Input</label>
+              <select id="freqMode">
+                <option value="hz">Frequency (Hz)</option>
+                <option value="period">Period (s)</option>
+                <option value="omega">Angular frequency (rad/s)</option>
+              </select>
+            </div>
+          </div>
+          <div class="result-grid" id="freqResults"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>PWM / Duty Cycle</h2>
+              <p class="note">Ideal average value, pulse width and switching frequency relationships.</p>
+            </div>
+          </div>
+          <div class="grid three">
+            <div class="fg">
+              <label for="pwmVoltage">DC Voltage (V)</label>
+              <input id="pwmVoltage" type="number" min="0" step="any" value="12">
+            </div>
+            <div class="fg">
+              <label for="pwmDuty">Duty Cycle (%)</label>
+              <input id="pwmDuty" type="number" min="0" max="100" step="0.1" value="50">
+            </div>
+            <div class="fg">
+              <label for="pwmFreq">Frequency (Hz)</label>
+              <input id="pwmFreq" type="number" min="0" step="any" value="1000">
+            </div>
+          </div>
+          <div class="result-grid" id="pwmResults"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Voltage / Power in dB</h2>
+              <p class="note">Decibel relationships for voltage and power ratios; impedance must match for voltage-power equivalence.</p>
+            </div>
+          </div>
+          <div class="grid three">
+            <div class="fg">
+              <label for="dbRatio">Ratio</label>
+              <input id="dbRatio" type="number" min="0" step="any" value="2">
+            </div>
+            <div class="fg">
+              <label for="dbMode">Relationship</label>
+              <select id="dbMode">
+                <option value="voltage">Voltage ratio</option>
+                <option value="power">Power ratio</option>
+              </select>
+            </div>
+            <div class="fg">
+              <label for="dbValue">dB input</label>
+              <input id="dbValue" type="number" step="any" value="6.0206">
+            </div>
+          </div>
+          <div class="btn-row" style="margin-top: 14px">
+            <button class="btn accent" id="dbSolve">Calculate</button>
+          </div>
+          <div class="result-grid" id="dbResults"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Phase Shift</h2>
+              <p class="note">Convert time delay into phase angle for a periodic signal.</p>
+            </div>
+          </div>
+          <div class="grid three">
+            <div class="fg">
+              <label for="phaseFreq">Frequency (Hz)</label>
+              <input id="phaseFreq" type="number" min="0" step="any" value="50">
+            </div>
+            <div class="fg">
+              <label for="phaseTime">Time Shift (ms)</label>
+              <input id="phaseTime" type="number" step="any" value="1">
+            </div>
+            <div class="fg">
+              <label for="phaseDeg">Phase Angle (°)</label>
+              <input id="phaseDeg" type="number" step="any" value="18">
+            </div>
+          </div>
+          <div class="result-grid" id="phaseResults"></div>
+        </div>
+      </section>
+
+      <!-- LIGHTING -->
+      <section class="tool-panel" id="panel-lighting">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Lighting / Lux</h2>
+              <p class="note">Estimate lumens required from area and target illuminance.</p>
+            </div>
+          </div>
+          <div class="grid three">
+            <div class="fg">
+              <label for="lightLength">Room Length (m)</label>
+              <input id="lightLength" type="number" min="0" step="any" value="5">
+            </div>
+            <div class="fg">
+              <label for="lightWidth">Room Width (m)</label>
+              <input id="lightWidth" type="number" min="0" step="any" value="4">
+            </div>
+            <div class="fg">
+              <label for="lightLux">Target Illuminance (lux)</label>
+              <input id="lightLux" type="number" min="0" step="any" value="300">
+            </div>
+            <div class="fg">
+              <label for="lightUtil">Utilization factor (%)</label>
+              <input id="lightUtil" type="number" min="1" max="100" step="1" value="70">
+            </div>
+            <div class="fg">
+              <label for="lightMaint">Maintenance factor (%)</label>
+              <input id="lightMaint" type="number" min="1" max="100" step="1" value="80">
+            </div>
+            <div class="fg">
+              <label for="lightLuminaire">Lumens / luminaire</label>
+              <input id="lightLuminaire" type="number" min="1" step="any" value="4000">
+            </div>
+          </div>
+          <div class="result-grid" id="lightResults"></div>
+          <div class="formula">Required lumens ≈ lux × area / (UF × MF)</div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>LED Driver / Resistor</h2>
+              <p class="note">Ideal resistor required for a single LED current path.</p>
+            </div>
+          </div>
+          <div class="grid three">
+            <div class="fg">
+              <label for="ledSupply">Supply (V)</label>
+              <input id="ledSupply" type="number" min="0" step="any" value="12">
+            </div>
+            <div class="fg">
+              <label for="ledForward">LED Forward Voltage (V)</label>
+              <input id="ledForward" type="number" min="0" step="any" value="2">
+            </div>
+            <div class="fg">
+              <label for="ledCurrent">LED Current (mA)</label>
+              <input id="ledCurrent" type="number" min="0" step="any" value="20">
+            </div>
+            <div class="fg">
+              <label for="ledCount">LEDs in series</label>
+              <input id="ledCount" type="number" min="1" step="1" value="1">
+            </div>
+            <div class="fg">
+              <label for="ledMargin">Resistor power margin (%)</label>
+              <input id="ledMargin" type="number" min="0" step="1" value="100">
+            </div>
+          </div>
+          <div class="result-grid" id="ledResults"></div>
+        </div>
+      </section>
+
+      <!-- UNITS -->
+      <section class="tool-panel" id="panel-converter">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Electrical Unit Converter</h2>
+              <p class="note">Local conversions for common electrical engineering units.</p>
+            </div>
+          </div>
+          <div class="grid three">
+            <div class="fg">
+              <label for="unitValue">Value</label>
+              <input id="unitValue" type="number" step="any" value="1000">
+            </div>
+            <div class="fg">
+              <label for="unitFamily">Quantity</label>
+              <select id="unitFamily"></select>
+            </div>
+            <div class="fg">
+              <label for="unitFrom">From</label>
+              <select id="unitFrom"></select>
+            </div>
+            <div class="fg">
+              <label for="unitTo">To</label>
+              <select id="unitTo"></select>
+            </div>
+          </div>
+          <div class="result-grid">
+            <div class="result accent">
+              <div class="r-label">Converted Value</div>
+              <div class="r-value" id="unitResult">-</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2>Common Electrical Prefixes</h2>
+              <p class="note">Use engineering notation without leaving the studio.</p>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Prefix</th>
+                  <th>Symbol</th>
+                  <th>Factor</th>
+                </tr>
+              </thead>
+              <tbody id="prefixTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <section id="referenceApp" class="hidden">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2>Electrical Reference</h2>
+            <p class="note">Compact formulas, constants and engineering reminders.</p>
+          </div>
+        </div>
+
+        <div class="grid two">
+          <div>
+            <h3 class="sub">Core formulas</h3>
+            <div class="history">
+              <div class="history-row"><code>V = I × R</code><span>Ohm's law</span></div>
+              <div class="history-row"><code>P = V × I</code><span>DC / resistive power</span></div>
+              <div class="history-row"><code>P = V × I × PF</code><span>1φ real power</span></div>
+              <div class="history-row"><code>P = √3 × VLL × I × PF</code><span>3φ real power</span></div>
+              <div class="history-row"><code>S = √3 × VLL × I</code><span>3φ apparent power</span></div>
+              <div class="history-row"><code>Q = √(S² − P²)</code><span>Reactive power</span></div>
+              <div class="history-row"><code>η = Pout / Pin</code><span>Efficiency</span></div>
+              <div class="history-row"><code>E = P × t</code><span>Energy</span></div>
+              <div class="history-row"><code>T = 9550 × P(kW) / RPM</code><span>Torque</span></div>
+              <div class="history-row"><code>τRC = R × C</code><span>RC time constant</span></div>
+              <div class="history-row"><code>τRL = L / R</code><span>RL time constant</span></div>
+              <div class="history-row"><code>f_c = 1 / (2πRC)</code><span>RC cutoff</span></div>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="sub">Engineering constants</h3>
+            <div class="history">
+              <div class="history-row"><code>√3 ≈ 1.732050808</code><span>Three-phase factor</span></div>
+              <div class="history-row"><code>√2 ≈ 1.414213562</code><span>RMS ↔ peak</span></div>
+              <div class="history-row"><code>π ≈ 3.141592654</code><span>Circle / angular frequency</span></div>
+              <div class="history-row"><code>ρCu ≈ 0.0175 Ω·mm²/m @ 20°C</code><span>Copper reference</span></div>
+              <div class="history-row"><code>ρAl ≈ 0.0282 Ω·mm²/m @ 20°C</code><span>Aluminium reference</span></div>
+              <div class="history-row"><code>1 kWh = 3.6 MJ</code><span>Energy conversion</span></div>
+            </div>
+
+            <h3 class="sub">Bangladesh quick reference</h3>
+            <p class="note">
+              A Bangladesh government electrical guideline states nominal domestic supply as
+              230 V single phase and 400 V three phase, with nominal frequency 50 Hz.
+              Treat local project specifications and current standards as controlling values.
+            </p>
+          </div>
+        </div>
+
+        <div class="danger-note">
+          Aznur Electrical Studio is an engineering reference tool. It does not replace a licensed
+          electrical engineer, site inspection, utility requirements, applicable IEC/BS/NFPA/local
+          codes, protection coordination, arc-flash/short-circuit studies, or manufacturer data.
+          Never use calculator output alone to work on energized equipment.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2>Reference Tables</h2>
+            <p class="note">Common standard values for quick lookup.</p>
+          </div>
+        </div>
+        <div class="grid two">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Common breaker reference</th><th>Rating (A)</th></tr>
+              </thead>
+              <tbody id="breakerTable"></tbody>
+            </table>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Common wire area</th><th>Approx. AWG match</th></tr>
+              </thead>
+              <tbody id="awgTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <p>Aznur Electrical Studio - calculations are performed locally in your browser.</p>
+      <p style="margin-top: 4px">
+        Designed as a fast engineering reference and planning toolbox. Verify design-critical values against the applicable standard and installation data.
+      </p>
+    </footer>
+  </main>
+
+  <script>
+    "use strict";
+
+    /* ======================================================================
+       AZNUR ELECTRICAL STUDIO
+       Pure calculation engine + small DOM layer.
+       No external libraries, no network requests, no eval().
+       ====================================================================== */
+
+    const APP = Object.freeze({
+      storageKey: "aznur-electrical-studio-v1",
+      toastMs: 3800,
+      defaultLoads: [
+        { name: "Lighting", qty: 10, watts: 15, pf: 0.95, demand: 0.8 },
+        { name: "Socket circuit", qty: 6, watts: 100, pf: 0.95, demand: 0.5 },
+        { name: "AC unit", qty: 2, watts: 1200, pf: 0.9, demand: 0.8 }
+      ],
+      cableSizes: [
+        0.5, 0.75, 1, 1.5, 2.5, 4, 6, 10, 16, 25, 35, 50, 70,
+        95, 120, 150, 185, 240, 300, 400, 500, 630
+      ],
+      breakerSizes: [
+        2, 4, 6, 10, 13, 16, 20, 25, 32, 40, 50, 63, 80, 100, 125,
+        160, 200, 250, 315, 400, 500, 630, 800, 1000, 1250, 1600
+      ],
+      prefixes: [
+        ["pico", "p", 1e-12],
+        ["nano", "n", 1e-9],
+        ["micro", "µ", 1e-6],
+        ["milli", "m", 1e-3],
+        ["centi", "c", 1e-2],
+        ["deci", "d", 1e-1],
+        ["kilo", "k", 1e3],
+        ["mega", "M", 1e6],
+        ["giga", "G", 1e9],
+        ["tera", "T", 1e12]
+      ]
+    });
+
+    const AWG_TABLE = [
+      ["0", 53.49],
+      ["1", 42.41],
+      ["2", 33.63],
+      ["3", 26.67],
+      ["4", 21.15],
+      ["5", 16.77],
+      ["6", 13.30],
+      ["7", 10.55],
+      ["8", 8.37],
+      ["9", 6.63],
+      ["10", 5.26],
+      ["11", 4.17],
+      ["12", 3.31],
+      ["13", 2.62],
+      ["14", 2.08],
+      ["15", 1.65],
+      ["16", 1.31],
+      ["17", 1.04],
+      ["18", 0.823],
+      ["19", 0.653],
+      ["20", 0.518],
+      ["21", 0.410],
+      ["22", 0.326],
+      ["23", 0.258],
+      ["24", 0.205],
+      ["25", 0.162],
+      ["26", 0.129],
+      ["27", 0.102],
+      ["28", 0.081],
+      ["29", 0.064],
+      ["30", 0.051]
+    ];
+
+    const UNIT_FAMILIES = {
+      voltage: {
+        label: "Voltage",
+        units: {
+          V: 1,
+          mV: 1e-3,
+          kV: 1e3
+        }
+      },
+      current: {
+        label: "Current",
+        units: {
+          A: 1,
+          mA: 1e-3,
+          µA: 1e-6,
+          kA: 1e3
+        }
+      },
+      power: {
+        label: "Power",
+        units: {
+          W: 1,
+          mW: 1e-3,
+          kW: 1e3,
+          MW: 1e6,
+          GW: 1e9,
+          hp: 745.699872
+        }
+      },
+      apparent: {
+        label: "Apparent power",
+        units: {
+          VA: 1,
+          kVA: 1e3,
+          MVA: 1e6
+        }
+      },
+      reactive: {
+        label: "Reactive power",
+        units: {
+          var: 1,
+          kvar: 1e3,
+          Mvar: 1e6
+        }
+      },
+      resistance: {
+        label: "Resistance",
+        units: {
+          Ω: 1,
+          mΩ: 1e-3,
+          kΩ: 1e3,
+          MΩ: 1e6
+        }
+      },
+      capacitance: {
+        label: "Capacitance",
+        units: {
+          F: 1,
+          mF: 1e-3,
+          µF: 1e-6,
+          nF: 1e-9,
+          pF: 1e-12
+        }
+      },
+      inductance: {
+        label: "Inductance",
+        units: {
+          H: 1,
+          mH: 1e-3,
+          µH: 1e-6,
+          nH: 1e-9
+        }
+      },
+      charge: {
+        label: "Charge",
+        units: {
+          C: 1,
+          mC: 1e-3,
+          µC: 1e-6,
+          Ah: 3600,
+          mAh: 3.6
+        }
+      },
+      energy: {
+        label: "Energy",
+        units: {
+          J: 1,
+          kJ: 1e3,
+          MJ: 1e6,
+          Wh: 3600,
+          kWh: 3.6e6,
+          MWh: 3.6e9,
+          BTU: 1055.05585262
+        }
+      },
+      frequency: {
+        label: "Frequency",
+        units: {
+          Hz: 1,
+          kHz: 1e3,
+          MHz: 1e6,
+          GHz: 1e9
+        }
+      },
+      conductance: {
+        label: "Conductance",
+        units: {
+          S: 1,
+          mS: 1e-3,
+          µS: 1e-6,
+          nS: 1e-9
+        }
+      },
+      magneticFlux: {
+        label: "Magnetic flux",
+        units: {
+          Wb: 1,
+          mWb: 1e-3,
+          µWb: 1e-6
+        }
+      },
+      magneticFluxDensity: {
+        label: "Magnetic flux density",
+        units: {
+          T: 1,
+          mT: 1e-3,
+          µT: 1e-6,
+          G: 1e-4
+        }
+      }
+    };
+
+    const MATH = {
+      sqrt3: Math.sqrt(3),
+      sqrt2: Math.sqrt(2),
+      pi: Math.PI,
+
+      finite(value, fallback = 0) {
+        return Number.isFinite(Number(value)) ? Number(value) : fallback;
+      },
+
+      clamp(value, min, max) {
+        return Math.min(max, Math.max(min, value));
+      },
+
+      safeDivide(a, b) {
+        return b === 0 ? NaN : a / b;
+      },
+
+      round(value, digits = 6) {
+        if (!Number.isFinite(value)) return "-";
+        const factor = 10 ** digits;
+        return String(Math.round(value * factor) / factor);
+      },
+
+      fmt(value, digits = 6, unit = "") {
+        if (!Number.isFinite(value)) return "-";
+        const abs = Math.abs(value);
+        let text;
+        if (abs !== 0 && (abs >= 1e6 || abs < 1e-3)) {
+          text = value.toExponential(Math.min(digits, 6));
+        } else {
+          text = value.toLocaleString(undefined, {
+            maximumFractionDigits: digits
+          });
+        }
+        return unit ? `${text} ${unit}` : text;
+      },
+
+      nextStandard(value, list) {
+        return list.find((item) => item >= value) ?? list[list.length - 1];
+      },
+
+      powerFactorFromTriangle(p, q) {
+        const s = Math.hypot(p, q);
+        return s > 0 ? p / s : NaN;
+      },
+
+      phaseFromPF(pf) {
+        return Math.acos(MATH.clamp(pf, -1, 1));
+      },
+
+      conductorResistance(lengthM, areaMm2, resistivity, temperatureFactor = 1) {
+        if (areaMm2 <= 0) return NaN;
+        return resistivity * lengthM * temperatureFactor / areaMm2;
+      },
+
+      series(values) {
+        return values.reduce((sum, value) => sum + value, 0);
+      },
+
+      parallel(values) {
+        if (!values.length || values.some((value) => value <= 0)) return NaN;
+        const reciprocal = values.reduce((sum, value) => sum + 1 / value, 0);
+        return reciprocal > 0 ? 1 / reciprocal : NaN;
+      }
+    };
+
+    const $ = (id) => document.getElementById(id);
+
+    function readNumber(id, fallback = 0) {
+      const value = Number($(id)?.value);
+      return Number.isFinite(value) ? value : fallback;
+    }
+
+    function setText(id, text) {
+      const element = $(id);
+      if (element) element.textContent = String(text);
+    }
+
+    function resultCard(label, value, extraClass = "") {
+      return `
+        <div class="result ${extraClass}">
+          <div class="r-label">${escapeHTML(label)}</div>
+          <div class="r-value">${escapeHTML(value)}</div>
+        </div>
+      `;
+    }
+
+    function renderResults(id, items) {
+      const element = $(id);
+      if (!element) return;
+      element.innerHTML = items
+        .map((item) => resultCard(item.label, item.value, item.className || ""))
+        .join("");
+    }
+
+    function escapeHTML(text) {
+      return String(text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function toast(message, type = "ok") {
+      const node = document.createElement("div");
+      node.className = `toast ${type}`;
+      node.textContent = message;
+      $("toasts").append(node);
+      window.setTimeout(() => node.remove(), APP.toastMs);
+    }
+
+    function storeValue(id, value) {
+      if (!$("rememberValues")?.checked) return;
+      try {
+        const stored = JSON.parse(localStorage.getItem(APP.storageKey) || "{}");
+        stored[id] = value;
+        localStorage.setItem(APP.storageKey, JSON.stringify(stored));
+      } catch {
+        /* Storage is optional. */
+      }
+    }
+
+    function restoreValues() {
+      try {
+        const stored = JSON.parse(localStorage.getItem(APP.storageKey) || "{}");
+        Object.entries(stored).forEach(([id, value]) => {
+          if ($(id) && "value" in $(id)) $(id).value = value;
+        });
+      } catch {
+        /* Storage is optional. */
+      }
+    }
+
+    function clearStoredValues() {
+      try {
+        localStorage.removeItem(APP.storageKey);
+      } catch {
+        /* Ignore storage failures. */
+      }
+      toast("Saved values cleared.");
+    }
+
+    function bindRemembered(ids) {
+      ids.forEach((id) => {
+        const element = $(id);
+        if (!element) return;
+        element.addEventListener("input", () => storeValue(id, element.value));
+        element.addEventListener("change", () => storeValue(id, element.value));
+      });
+    }
+
+    /* ======================================================================
+       QUICK / OHM
+       ====================================================================== */
+
+    function solveQuick() {
+      const voltage = Math.max(0, readNumber("quickV"));
+      const current = Math.max(0, readNumber("quickI"));
+      const resistance = Math.max(0, readNumber("quickR"));
+      const realPower = Math.max(0, readNumber("quickP"));
+      const pf = MATH.clamp(readNumber("quickPF", 1), 0.01, 1);
+      const phase = $("quickPhase").value;
+
+      let apparent;
+      let reactive;
+      let currentFromPower;
+
+      if (phase === "three") {
+        apparent = MATH.sqrt3 * voltage * current / 1000;
+        reactive = apparent * Math.sqrt(Math.max(0, 1 - pf * pf));
+        currentFromPower = voltage > 0 ? realPower * 1000 / (MATH.sqrt3 * voltage * pf) : NaN;
+      } else {
+        apparent = voltage * current / 1000;
+        reactive = apparent * Math.sqrt(Math.max(0, 1 - pf * pf));
+        currentFromPower = voltage > 0 ? realPower * 1000 / (voltage * pf) : NaN;
+      }
+
+      renderResults("quickResults", [
+        { label: "V × I", value: MATH.fmt(voltage * current, 5, "VA") },
+        { label: "P from V/I/PF", value: MATH.fmt(apparent * pf, 5, "kW") },
+        { label: "Reactive Q", value: MATH.fmt(reactive, 5, "kvar") },
+        { label: "Current from P", value: MATH.fmt(currentFromPower, 5, "A") },
+        { label: "V / I", value: MATH.fmt(MATH.safeDivide(voltage, current), 5, "Ω") },
+        { label: "I²R power", value: MATH.fmt(current * current * resistance, 5, "W") }
+      ]);
+
+      $("quickFormula").innerHTML = phase === "three"
+        ? "P = √3 × V<sub>LL</sub> × I × PF"
+        : "P = V × I × PF";
+    }
+
+    function solveOhm() {
+      const rawV = $("ohmV").value.trim();
+      const rawI = $("ohmI").value.trim();
+      const rawR = $("ohmR").value.trim();
+
+      const known = [
+        ["V", rawV],
+        ["I", rawI],
+        ["R", rawR]
+      ].filter(([, value]) => value !== "" && Number.isFinite(Number(value)));
+
+      if (known.length < 2) {
+        toast("Enter any two Ohm's-law values.", "warn");
+        return;
+      }
+
+      let voltage = Number(rawV);
+      let current = Number(rawI);
+      let resistance = Number(rawR);
+
+      try {
+        if (rawV === "") voltage = current * resistance;
+        if (rawI === "") current = voltage / resistance;
+        if (rawR === "") resistance = voltage / current;
+      } catch {
+        toast("Could not solve those values.", "err");
+        return;
+      }
+
+      renderResults("ohmResults", [
+        { label: "Voltage", value: MATH.fmt(voltage, 8, "V"), className: "accent" },
+        { label: "Current", value: MATH.fmt(current, 8, "A"), className: "accent" },
+        { label: "Resistance", value: MATH.fmt(resistance, 8, "Ω"), className: "accent" },
+        { label: "Power", value: MATH.fmt(voltage * current, 8, "W") }
+      ]);
+    }
+
+    /* ======================================================================
+       AC / DC
+       ====================================================================== */
+
+    function solveACPower() {
+      const voltage = Math.max(0, readNumber("acVoltage"));
+      const current = Math.max(0, readNumber("acCurrent"));
+      const pf = MATH.clamp(readNumber("acPf", 1), 0.01, 1);
+      const frequency = Math.max(0, readNumber("acFreq"));
+      const type = $("acType").value;
+      const vll = Math.max(0, readNumber("acVll"));
+
+      let apparent;
+      if (type === "three") {
+        apparent = MATH.sqrt3 * vll * current / 1000;
+      } else {
+        apparent = voltage * current / 1000;
+      }
+
+      const real = type === "dc" ? apparent : apparent * pf;
+      const reactive = type === "dc"
+        ? 0
+        : apparent * Math.sqrt(Math.max(0, 1 - pf * pf));
+      const phaseDeg = type === "dc" ? 0 : Math.acos(pf) * 180 / Math.PI;
+
+      renderResults("acResults", [
+        { label: "Real Power P", value: MATH.fmt(real, 6, "kW"), className: "accent" },
+        { label: "Apparent Power S", value: MATH.fmt(apparent, 6, "kVA") },
+        { label: "Reactive Power Q", value: MATH.fmt(reactive, 6, "kvar") },
+        { label: "Phase angle", value: MATH.fmt(phaseDeg, 5, "°") },
+        { label: "Frequency", value: MATH.fmt(frequency, 5, "Hz") },
+        { label: "Line / phase note", value: type === "three" ? `VLL ${MATH.fmt(vll, 4, "V")}` : "Voltage input used directly" }
+      ]);
+    }
+
+    function solveRMS() {
+      const value = Math.abs(readNumber("rmsValue"));
+      const mode = $("rmsMode").value;
+      let rms;
+
+      if (mode === "rms") rms = value;
+      if (mode === "peak") rms = value / MATH.sqrt2;
+      if (mode === "pp") rms = value / (2 * MATH.sqrt2);
+
+      const peak = rms * MATH.sqrt2;
+      const pp = peak * 2;
+
+      renderResults("rmsResults", [
+        { label: "RMS", value: MATH.fmt(rms, 7, "V"), className: "accent" },
+        { label: "Peak", value: MATH.fmt(peak, 7, "V") },
+        { label: "Peak-to-peak", value: MATH.fmt(pp, 7, "V") }
+      ]);
+    }
+
+    function solveThreePhase() {
+      const vll = Math.max(0, readNumber("threeVll"));
+      const lineCurrent = Math.max(0, readNumber("threeIline"));
+      const connection = $("threeConnection").value;
+      const vPhase = connection === "star"
+        ? vll / MATH.sqrt3
+        : vll;
+      const phaseCurrent = connection === "star"
+        ? lineCurrent
+        : lineCurrent / MATH.sqrt3;
+      const impedance = phaseCurrent > 0 ? vPhase / phaseCurrent : NaN;
+
+      renderResults("threeResults", [
+        { label: "Phase Voltage", value: MATH.fmt(vPhase, 7, "V"), className: "accent" },
+        { label: "Line Voltage", value: MATH.fmt(vll, 7, "V") },
+        { label: "Line Current", value: MATH.fmt(lineCurrent, 7, "A") },
+        { label: "Phase Current", value: MATH.fmt(phaseCurrent, 7, "A") },
+        { label: "Equivalent Phase Z", value: MATH.fmt(impedance, 7, "Ω") }
+      ]);
+    }
+
+    /* ======================================================================
+       POWER / ENERGY
+       ====================================================================== */
+
+    function solvePowerTriangle() {
+      const p = Math.max(0, readNumber("triP"));
+      const q = Math.max(0, readNumber("triQ"));
+      const s = Math.max(0, readNumber("triS"));
+      const computedS = Math.hypot(p, q);
+      const computedQ = Math.sqrt(Math.max(0, s * s - p * p));
+      const finalS = computedS > 0 ? computedS : s;
+      const pf = finalS > 0 ? p / finalS : NaN;
+      const angle = Number.isFinite(pf) ? Math.acos(MATH.clamp(pf, 0, 1)) * 180 / Math.PI : NaN;
+
+      renderResults("triResults", [
+        { label: "Apparent S", value: MATH.fmt(finalS, 7, "kVA"), className: "accent" },
+        { label: "Reactive Q from P/S", value: MATH.fmt(computedQ, 7, "kvar") },
+        { label: "Power Factor", value: MATH.fmt(pf, 7) },
+        { label: "Phase Angle", value: MATH.fmt(angle, 6, "°") },
+        { label: "Triangle check", value: MATH.fmt(Math.hypot(p, q) - s, 7, "kVA") }
+      ]);
+    }
+
+    function solveEnergy() {
+      const power = Math.max(0, readNumber("energyPower"));
+      const hours = Math.max(0, readNumber("energyHours"));
+      const days = Math.max(0, readNumber("energyDays"));
+      const tariff = Math.max(0, readNumber("energyTariff"));
+      const utilization = MATH.clamp(readNumber("energyEfficiency", 100), 0, 100) / 100;
+      const fixed = Math.max(0, readNumber("energyFixed"));
+      const daily = power * hours * utilization;
+      const monthly = daily * days;
+      const annual = monthly * 12;
+      const monthlyCost = monthly * tariff + fixed;
+      const annualCost = annual * tariff + fixed * 12;
+
+      renderResults("energyResults", [
+        { label: "Daily Energy", value: MATH.fmt(daily, 7, "kWh"), className: "accent" },
+        { label: "Monthly Energy", value: MATH.fmt(monthly, 7, "kWh") },
+        { label: "Annual Energy", value: MATH.fmt(annual, 7, "kWh") },
+        { label: "Monthly Cost", value: MATH.fmt(monthlyCost, 7, "৳") },
+        { label: "Annual Cost", value: MATH.fmt(annualCost, 7, "৳") }
+      ]);
+    }
+
+    function solveHeatingElement() {
+      const voltage = Math.max(0, readNumber("heatV"));
+      const resistance = Math.max(0, readNumber("heatR"));
+      const hours = Math.max(0, readNumber("heatTime"));
+      const current = resistance > 0 ? voltage / resistance : NaN;
+      const power = resistance > 0 ? voltage * voltage / resistance : NaN;
+      const energy = power * hours / 1000;
+
+      renderResults("heatResults", [
+        { label: "Current", value: MATH.fmt(current, 7, "A"), className: "accent" },
+        { label: "Power", value: MATH.fmt(power, 7, "W") },
+        { label: "Energy", value: MATH.fmt(energy, 7, "kWh") }
+      ]);
+    }
+
+    /* ======================================================================
+       LOAD SCHEDULE
+       ====================================================================== */
+
+    let loads = structuredClone(APP.defaultLoads);
+
+    function renderLoads() {
+      const list = $("loadList");
+      list.replaceChildren();
+
+      loads.forEach((load, index) => {
+        const row = document.createElement("div");
+        row.className = "load-row";
+
+        row.innerHTML = `
+          <input class="load-name" data-index="${index}" data-key="name" type="text" value="${escapeHTML(load.name)}" aria-label="Load name">
+          <input data-index="${index}" data-key="qty" type="number" min="1" step="1" value="${load.qty}" aria-label="Quantity">
+          <input data-index="${index}" data-key="watts" type="number" min="0" step="any" value="${load.watts}" aria-label="Watts">
+          <input data-index="${index}" data-key="pf" type="number" min="0.1" max="1" step="0.01" value="${load.pf}" aria-label="Power factor">
+          <input data-index="${index}" data-key="demand" type="number" min="0" max="100" step="1" value="${load.demand * 100}" aria-label="Demand factor percent">
+          <button class="btn danger sm" data-remove="${index}" type="button" aria-label="Remove load">×</button>
+        `;
+
+        row.querySelectorAll("input").forEach((input) => {
+          input.addEventListener("input", () => {
+            const i = Number(input.dataset.index);
+            const key = input.dataset.key;
+            let value = input.value;
+            if (["qty", "watts", "pf"].includes(key)) value = Number(value);
+            if (key === "demand") value = Number(value) / 100;
+            loads[i][key] = value;
+            solveLoadSchedule();
+          });
+        });
+
+        row.querySelector("button").addEventListener("click", () => {
+          loads.splice(index, 1);
+          renderLoads();
+          solveLoadSchedule();
+        });
+
+        list.append(row);
+      });
+
+      if (!loads.length) {
+        const empty = document.createElement("p");
+        empty.className = "note";
+        empty.textContent = "No loads. Add one to build a schedule.";
+        list.append(empty);
+      }
+    }
+
+    function solveLoadSchedule() {
+      const voltage = Math.max(1, readNumber("loadVoltage", 230));
+      const demand = MATH.clamp(readNumber("loadDemand", 80), 0, 100) / 100;
+      const phase = $("loadPhase").value;
+
+      let connectedW = 0;
+      let diversifiedW = 0;
+      let apparentVA = 0;
+
+      loads.forEach((load) => {
+        const watts = Math.max(0, MATH.finite(load.watts));
+        const qty = Math.max(0, MATH.finite(load.qty));
+        const pf = MATH.clamp(MATH.finite(load.pf, 1), 0.1, 1);
+        const localDemand = MATH.clamp(MATH.finite(load.demand, 1), 0, 1);
+        const total = qty * watts;
+        connectedW += total;
+        diversifiedW += total * localDemand;
+        apparentVA += total / pf * localDemand;
+      });
+
+      diversifiedW *= demand;
+      apparentVA *= demand;
+      const current = phase === "three"
+        ? apparentVA / (MATH.sqrt3 * voltage)
+        : apparentVA / voltage;
+
+      renderResults("loadStats", [
+        { label: "Connected Load", value: MATH.fmt(connectedW / 1000, 6, "kW") },
+        { label: "Diversified Real", value: MATH.fmt(diversifiedW / 1000, 6, "kW"), className: "accent" },
+        { label: "Estimated Apparent", value: MATH.fmt(apparentVA / 1000, 6, "kVA") },
+        { label: "Estimated Current", value: MATH.fmt(current, 6, "A") },
+        { label: "Calculated PF", value: MATH.fmt(diversifiedW / apparentVA, 6) }
+      ]);
+    }
+
+    /* ======================================================================
+       CABLES
+       ====================================================================== */
+
+    const RESISTIVITY = Object.freeze({
+      copper: 0.0175,
+      aluminium: 0.0282
+    });
+
+    function solveCableDrop() {
+      const voltage = Math.max(1, readNumber("cableVoltage"));
+      const current = Math.max(0, readNumber("cableCurrent"));
+      const length = Math.max(0, readNumber("cableLength"));
+      const area = Math.max(0.01, Number($("cableSize").value));
+      const material = $("cableMaterial").value;
+      const system = $("cableSystem").value;
+      const pf = MATH.clamp(readNumber("cablePF", 1), 0.1, 1);
+      const xOhmKm = Math.max(0, readNumber("cableReactance"));
+      const tempFactor = Math.max(0, readNumber("cableTempFactor", 1));
+      const rho = RESISTIVITY[material];
+      const rOneWay = MATH.conductorResistance(length, area, rho, tempFactor);
+      const lengthKm = length / 1000;
+      const xOneWay = xOhmKm * lengthKm;
+      const sinPhi = Math.sqrt(Math.max(0, 1 - pf * pf));
+
+      let dropV;
+      let loopFactor;
+      if (system === "three") {
+        loopFactor = MATH.sqrt3;
+        dropV = MATH.sqrt3 * current * (rOneWay * pf + xOneWay * sinPhi);
+      } else {
+        loopFactor = 2;
+        dropV = 2 * current * (rOneWay * pf + xOneWay * sinPhi);
+      }
+
+      const dropPercent = dropV / voltage * 100;
+      const copperLoss = system === "three"
+        ? 3 * current * current * rOneWay
+        : 2 * current * current * rOneWay;
+      const finalPower = current * voltage * (system === "three" ? MATH.sqrt3 : 1) * pf;
+
+      renderResults("cableResults", [
+        { label: "Conductor R (one-way)", value: MATH.fmt(rOneWay, 8, "Ω") },
+        { label: "Estimated ΔV", value: MATH.fmt(dropV, 7, "V"), className: "accent" },
+        { label: "Voltage Drop", value: MATH.fmt(dropPercent, 6, "%") },
+        { label: "Conductor I²R Loss", value: MATH.fmt(copperLoss, 7, "W") },
+        { label: "Estimated Load Power", value: MATH.fmt(finalPower / 1000, 7, "kW") },
+        { label: "Loop factor", value: MATH.fmt(loopFactor, 3) }
+      ]);
+    }
+
+    function solveCableSizing() {
+      const voltage = Math.max(1, readNumber("sizingV"));
+      const current = Math.max(0, readNumber("sizingI"));
+      const length = Math.max(0, readNumber("sizingLength"));
+      const maxPercent = Math.max(0.01, readNumber("sizingDrop"));
+      const material = $("sizingMaterial").value;
+      const system = $("sizingSystem").value;
+      const maxDropV = voltage * maxPercent / 100;
+      const loopFactor = system === "three" ? MATH.sqrt3 : 2;
+      const rho = RESISTIVITY[material];
+      const area = current > 0 && maxDropV > 0
+        ? loopFactor * current * rho * length / maxDropV
+        : NaN;
+      const standard = Number.isFinite(area)
+        ? MATH.nextStandard(area, APP.cableSizes)
+        : NaN;
+      const actualDropWithStandard = Number.isFinite(standard)
+        ? loopFactor * current * rho * length / standard
+        : NaN;
+
+      renderResults("sizingResults", [
+        { label: "Theoretical Minimum Area", value: MATH.fmt(area, 7, "mm²"), className: "accent" },
+        { label: "Next Listed Area", value: MATH.fmt(standard, 7, "mm²") },
+        { label: "Drop at Listed Area", value: MATH.fmt(actualDropWithStandard, 7, "V") },
+        { label: "Drop % at Listed Area", value: MATH.fmt(actualDropWithStandard / voltage * 100, 6, "%") }
+      ]);
+    }
+
+    function solveAWG() {
+      const awgIndex = Number($("awgInput").value);
+      const metric = Number($("awgMetric").value);
+      const awgArea = AWG_TABLE[awgIndex]?.[1] ?? NaN;
+      const metricArea = Number.isFinite(metric) ? metric : awgArea;
+      const closest = AWG_TABLE
+        .map(([awg, area]) => ({ awg, area, error: Math.abs(area - metricArea) }))
+        .sort((a, b) => a.error - b.error)[0];
+
+      renderResults("awgResults", [
+        { label: "Selected AWG Area", value: MATH.fmt(awgArea, 6, "mm²"), className: "accent" },
+        { label: "Selected Metric Area", value: MATH.fmt(metricArea, 6, "mm²") },
+        { label: "Nearest AWG", value: `AWG ${closest?.awg ?? "-"}` },
+        { label: "Nearest Area", value: MATH.fmt(closest?.area, 6, "mm²") }
+      ]);
+    }
+
+    function solveBusbar() {
+      const current = Math.max(0, readNumber("busCurrent"));
+      const density = Math.max(0.01, readNumber("busDensity"));
+      const width = Math.max(0.1, readNumber("busWidth"));
+      const area = current / density;
+      const thickness = area / width;
+
+      renderResults("busResults", [
+        { label: "Required Area", value: MATH.fmt(area, 7, "mm²"), className: "accent" },
+        { label: "Thickness at Chosen Width", value: MATH.fmt(thickness, 7, "mm") },
+        { label: "Area Check", value: `${MATH.fmt(area, 5, "mm²")} from ${MATH.fmt(density, 4, "A/mm²")}` }
+      ]);
+    }
+
+    /* ======================================================================
+       MOTORS
+       ====================================================================== */
+
+    function solveMotor() {
+      const mechanicalKW = Math.max(0, readNumber("motorPower"));
+      const efficiency = MATH.clamp(readNumber("motorEff", 90), 1, 100) / 100;
+      const pf = MATH.clamp(readNumber("motorPf", 0.85), 0.1, 1);
+      const voltage = Math.max(1, readNumber("motorVoltage", 400));
+      const freq = Math.max(0, readNumber("motorFreq", 50));
+      const poles = Math.max(2, Number($("motorPole").value));
+      const slip = MATH.clamp(readNumber("motorSlip", 3), 0, 30) / 100;
+      const startingMultiplier = Math.max(1, readNumber("motorStartup", 6));
+
+      const inputKW = mechanicalKW / efficiency;
+      const kva = inputKW / pf;
+      const current = inputKW * 1000 / (MATH.sqrt3 * voltage * pf);
+      const syncRPM = freq > 0 ? 120 * freq / poles : NaN;
+      const actualRPM = syncRPM * (1 - slip);
+      const torque = actualRPM > 0 ? 9550 * mechanicalKW / actualRPM : NaN;
+      const startCurrent = current * startingMultiplier;
+
+      renderResults("motorResults", [
+        { label: "Electrical Input", value: MATH.fmt(inputKW, 7, "kW"), className: "accent" },
+        { label: "Input Apparent", value: MATH.fmt(kva, 7, "kVA") },
+        { label: "Full-load Current", value: MATH.fmt(current, 7, "A") },
+        { label: "Synchronous Speed", value: MATH.fmt(syncRPM, 6, "RPM") },
+        { label: "Estimated Running Speed", value: MATH.fmt(actualRPM, 6, "RPM") },
+        { label: "Shaft Torque", value: MATH.fmt(torque, 7, "N·m") },
+        { label: "Starting Current", value: MATH.fmt(startCurrent, 7, "A") }
+      ]);
+    }
+
+    function solveTorque() {
+      const power = Math.max(0, readNumber("torquePower"));
+      const rpm = Math.max(0.001, readNumber("torqueRPM"));
+      const torque = 9550 * power / rpm;
+      const angularSpeed = rpm * 2 * Math.PI / 60;
+
+      renderResults("torqueResults", [
+        { label: "Torque", value: MATH.fmt(torque, 8, "N·m"), className: "accent" },
+        { label: "Angular Speed", value: MATH.fmt(angularSpeed, 8, "rad/s") },
+        { label: "Power", value: MATH.fmt(power, 8, "kW") }
+      ]);
+    }
+
+    function solveInrush() {
+      const fla = Math.max(0, readNumber("inrushFla"));
+      const multiplier = Math.max(1, readNumber("inrushMultiplier", 6));
+      renderResults("inrushResults", [
+        { label: "Estimated Starting Current", value: MATH.fmt(fla * multiplier, 7, "A"), className: "accent" },
+        { label: "Full-load Current", value: MATH.fmt(fla, 7, "A") },
+        { label: "Multiplier", value: `${MATH.fmt(multiplier, 3)} ×` }
+      ]);
+    }
+
+    /* ======================================================================
+       TRANSFORMERS / FAULT
+       ====================================================================== */
+
+    function solveTransformer() {
+      const kva = Math.max(0, readNumber("txKva"));
+      const primary = Math.max(1, readNumber("txPrimary"));
+      const secondary = Math.max(1, readNumber("txSecondary"));
+      const phase = $("txPhase").value;
+      const efficiency = MATH.clamp(readNumber("txEff", 97), 1, 100) / 100;
+      const pf = MATH.clamp(readNumber("txPf", 0.9), 0.1, 1);
+      const factor = phase === "three" ? MATH.sqrt3 : 1;
+      const primaryCurrent = kva * 1000 / (factor * primary);
+      const secondaryCurrent = kva * 1000 / (factor * secondary);
+      const inputKW = kva * pf / efficiency;
+      const realOutput = kva * pf;
+
+      renderResults("txResults", [
+        { label: "Primary Current", value: MATH.fmt(primaryCurrent, 7, "A"), className: "accent" },
+        { label: "Secondary Current", value: MATH.fmt(secondaryCurrent, 7, "A") },
+        { label: "Real Output at PF", value: MATH.fmt(realOutput, 7, "kW") },
+        { label: "Approx. Input Real Power", value: MATH.fmt(inputKW, 7, "kW") },
+        { label: "Voltage Ratio", value: MATH.fmt(primary / secondary, 7) }
+      ]);
+    }
+
+    function solveTransformerRatio() {
+      const v1 = Math.max(0, readNumber("ratioV1"));
+      const v2 = Math.max(0, readNumber("ratioV2"));
+      const n1 = Math.max(0, readNumber("ratioN1"));
+      const ratio = v1 > 0 ? v2 / v1 : NaN;
+      const n2 = Number.isFinite(ratio) ? n1 * ratio : NaN;
+
+      renderResults("ratioResults", [
+        { label: "V2 / V1", value: MATH.fmt(ratio, 8), className: "accent" },
+        { label: "Required Secondary Turns", value: MATH.fmt(n2, 7) },
+        { label: "Turns Ratio N1/N2", value: MATH.fmt(MATH.safeDivide(n1, n2), 7) }
+      ]);
+    }
+
+    function solveFaultCurrent() {
+      const voltage = Math.max(0, readNumber("faultV"));
+      const impedance = Math.max(0.000001, readNumber("faultZ"));
+      const phase = $("faultPhase").value;
+      const current = phase === "three"
+        ? voltage / (MATH.sqrt3 * impedance)
+        : voltage / impedance;
+
+      renderResults("faultResults", [
+        { label: "Prospective Current", value: MATH.fmt(current, 7, "A"), className: "accent" },
+        { label: "Prospective Current", value: MATH.fmt(current / 1000, 7, "kA") },
+        { label: "Equivalent Impedance", value: MATH.fmt(impedance, 8, "Ω") }
+      ]);
+    }
+
+    /* ======================================================================
+       PROTECTION
+       ====================================================================== */
+
+    function solveProtection() {
+      const load = Math.max(0, readNumber("protectLoad"));
+      const continuous = Math.max(0, readNumber("protectContinuous", 100)) / 100;
+      const margin = Math.max(0, readNumber("protectMargin")) / 100;
+      const design = load * Math.max(continuous, 1) * (1 + margin);
+      const next = MATH.nextStandard(design, APP.breakerSizes);
+
+      renderResults("protectResults", [
+        { label: "Planning Current", value: MATH.fmt(design, 7, "A"), className: "accent" },
+        { label: "Next Reference Rating", value: MATH.fmt(next, 7, "A") },
+        { label: "Unused Headroom", value: MATH.fmt(next - design, 7, "A") }
+      ]);
+    }
+
+    function solveGenerator() {
+      const kw = Math.max(0, readNumber("genKw"));
+      const pf = MATH.clamp(readNumber("genPf", 0.8), 0.1, 1);
+      const margin = Math.max(0, readNumber("genMargin")) / 100;
+      const voltage = Math.max(1, readNumber("genVoltage"));
+      const phase = $("genPhase").value;
+      const speed = Math.max(0, readNumber("genSpeed"));
+      const kva = kw / pf;
+      const ratedKva = kva * (1 + margin);
+      const factor = phase === "three" ? MATH.sqrt3 : 1;
+      const current = ratedKva * 1000 / (factor * voltage);
+      const poles = speed > 0 ? 120 * 50 / speed : NaN;
+
+      renderResults("genResults", [
+        { label: "Calculated Load kVA", value: MATH.fmt(kva, 7, "kVA"), className: "accent" },
+        { label: "Generator Rating", value: MATH.fmt(ratedKva, 7, "kVA") },
+        { label: "Full-load Current", value: MATH.fmt(current, 7, "A") },
+        { label: "50 Hz Equivalent Pole Count", value: Number.isFinite(poles) ? MATH.fmt(poles, 4) : "-" }
+      ]);
+    }
+
+    function solveConductorMass() {
+      const length = Math.max(0, readNumber("massLength"));
+      const area = Math.max(0.01, readNumber("massArea"));
+      const current = Math.max(0, readNumber("massCurrent"));
+      const hours = Math.max(0, readNumber("massTime"));
+      const material = $("massMaterial").value;
+      const rho = RESISTIVITY[material];
+      const density = material === "copper" ? 8.96 : 2.70;
+      const resistance = MATH.conductorResistance(length, area, rho);
+      const loss = current * current * resistance;
+      const massKg = length * area * density / 1000;
+      const lossEnergy = loss * hours / 1000;
+
+      renderResults("massResults", [
+        { label: "Conductor Resistance", value: MATH.fmt(resistance, 8, "Ω"), className: "accent" },
+        { label: "I²R Loss", value: MATH.fmt(loss, 7, "W") },
+        { label: "Approx. Metal Mass", value: MATH.fmt(massKg, 7, "kg") },
+        { label: "Loss Energy", value: MATH.fmt(lossEnergy, 7, "kWh") }
+      ]);
+    }
+
+    /* ======================================================================
+       BATTERY / UPS
+       ====================================================================== */
+
+    function solveBattery() {
+      const voltage = Math.max(0.1, readNumber("batV"));
+      const ah = Math.max(0, readNumber("batAh"));
+      const load = Math.max(0, readNumber("batLoad"));
+      const efficiency = MATH.clamp(readNumber("batEff", 90), 1, 100) / 100;
+      const dod = MATH.clamp(readNumber("batDod", 80), 1, 100) / 100;
+      const limit = Math.max(0, readNumber("batVoltageNom"));
+      const nominalWh = voltage * ah;
+      const usableWh = nominalWh * dod * efficiency;
+      const runtime = load > 0 ? usableWh / load : NaN;
+      const dcCurrent = load > 0 ? load / voltage / efficiency : NaN;
+      const cRate = ah > 0 ? dcCurrent / ah : NaN;
+
+      renderResults("batResults", [
+        { label: "Nominal Energy", value: MATH.fmt(nominalWh / 1000, 7, "kWh"), className: "accent" },
+        { label: "Usable Energy", value: MATH.fmt(usableWh / 1000, 7, "kWh") },
+        { label: "Estimated Runtime", value: MATH.fmt(runtime, 7, "h") },
+        { label: "Battery Current", value: MATH.fmt(dcCurrent, 7, "A") },
+        { label: "Approx. C-rate", value: MATH.fmt(cRate, 6, "C") },
+        { label: "User Current Limit", value: limit > 0 ? MATH.fmt(limit, 5, "A") : "Not set" }
+      ]);
+    }
+
+    function solveBatteryBank() {
+      const voltage = Math.max(0.1, readNumber("bankV"));
+      const ah = Math.max(0, readNumber("bankAh"));
+      const series = Math.max(1, Math.floor(readNumber("bankSeries", 1)));
+      const parallel = Math.max(1, Math.floor(readNumber("bankParallel", 1)));
+      const load = Math.max(0, readNumber("bankLoad"));
+      const bankV = voltage * series;
+      const bankAh = ah * parallel;
+      const bankKwh = bankV * bankAh / 1000;
+      const bankCurrent = load > 0 ? load / bankV : NaN;
+
+      renderResults("bankResults", [
+        { label: "Bank Voltage", value: MATH.fmt(bankV, 6, "V"), className: "accent" },
+        { label: "Bank Capacity", value: MATH.fmt(bankAh, 6, "Ah") },
+        { label: "Nominal Energy", value: MATH.fmt(bankKwh, 6, "kWh") },
+        { label: "Total Batteries", value: String(series * parallel) },
+        { label: "Load Current", value: MATH.fmt(bankCurrent, 6, "A") }
+      ]);
+    }
+
+    function solveUPS() {
+      const watts = Math.max(0, readNumber("upsW"));
+      const pf = MATH.clamp(readNumber("upsPf", 0.8), 0.1, 1);
+      const margin = Math.max(0, readNumber("upsMargin")) / 100;
+      const kva = watts / 1000 / pf;
+      const recommended = kva * (1 + margin);
+      const wattsEquivalent = recommended * pf * 1000;
+
+      renderResults("upsResults", [
+        { label: "Load Apparent", value: MATH.fmt(kva, 7, "kVA"), className: "accent" },
+        { label: "With Design Margin", value: MATH.fmt(recommended, 7, "kVA") },
+        { label: "Equivalent W at PF", value: MATH.fmt(wattsEquivalent, 7, "W") },
+        { label: "Load PF", value: MATH.fmt(pf, 5) }
+      ]);
+    }
+
+    /* ======================================================================
+       PASSIVE COMPONENTS
+       ====================================================================== */
+
+    function createComponentInputs(containerId, prefix, unit, count = 6) {
+      const container = $(containerId);
+      container.replaceChildren();
+      for (let index = 0; index < count; index += 1) {
+        const wrapper = document.createElement("div");
+        wrapper.className = "fg";
+        wrapper.innerHTML = `
+          <label for="${prefix}${index}">${prefix === "R" ? "R" : "C"}${index + 1} (${unit})</label>
+          <input id="${prefix}${index}" type="number" min="0" step="any" value="${prefix === "R" ? (index < 3 ? [10, 20, 30][index] : "") : (index < 3 ? [10, 20, 30][index] : "")}">
+        `;
+        container.append(wrapper);
+      }
+    }
+
+    function getComponentValues(prefix) {
+      const values = [];
+      for (let index = 0; index < 6; index += 1) {
+        const raw = $(`${prefix}${index}`)?.value?.trim();
+        if (raw !== "") {
+          const value = Number(raw);
+          if (Number.isFinite(value) && value > 0) values.push(value);
+        }
+      }
+      return values;
+    }
+
+    function solveResistors() {
+      const values = getComponentValues("R");
+      const series = MATH.series(values);
+      const parallel = MATH.parallel(values);
+
+      renderResults("resistorResults", [
+        { label: "Series", value: MATH.fmt(series, 8, "Ω"), className: "accent" },
+        { label: "Parallel", value: MATH.fmt(parallel, 8, "Ω") },
+        { label: "Components", value: String(values.length) }
+      ]);
+    }
+
+    function solveCapacitors() {
+      const values = getComponentValues("C");
+      const series = MATH.parallel(values);
+      const parallel = MATH.series(values);
+
+      renderResults("capacitorResults", [
+        { label: "Series", value: MATH.fmt(series, 8, "µF"), className: "accent" },
+        { label: "Parallel", value: MATH.fmt(parallel, 8, "µF") },
+        { label: "Components", value: String(values.length) }
+      ]);
+    }
+
+    function solvePFC() {
+      const kw = Math.max(0, readNumber("pfcKw"));
+      const fromPF = MATH.clamp(readNumber("pfcFrom", 0.75), 0.1, 1);
+      const toPF = MATH.clamp(readNumber("pfcTo", 0.95), 0.1, 1);
+      const voltage = Math.max(1, readNumber("pfcVoltage"));
+      const phase = $("pfcPhase").value;
+      const freq = Math.max(0, readNumber("pfcFreq", 50));
+
+      if (toPF <= fromPF) {
+        toast("Target PF should be higher than existing PF for correction.", "warn");
+      }
+
+      const qCurrent = kw * Math.tan(Math.acos(fromPF));
+      const qTarget = kw * Math.tan(Math.acos(toPF));
+      const kvar = Math.max(0, qCurrent - qTarget);
+      const factor = phase === "three" ? MATH.sqrt3 : 1;
+      const currentBefore = kw * 1000 / (factor * voltage * fromPF);
+      const currentAfter = kw * 1000 / (factor * voltage * toPF);
+
+      renderResults("pfcResults", [
+        { label: "Required Capacitor Bank", value: MATH.fmt(kvar, 7, "kvar"), className: "accent" },
+        { label: "Current Before", value: MATH.fmt(currentBefore, 7, "A") },
+        { label: "Current After", value: MATH.fmt(currentAfter, 7, "A") },
+        { label: "Current Reduction", value: MATH.fmt(currentBefore - currentAfter, 7, "A") },
+        { label: "Frequency", value: MATH.fmt(freq, 5, "Hz") }
+      ]);
+    }
+
+    function solveTimeConstant() {
+      const r = Math.max(0, readNumber("tauR"));
+      const c = Math.max(0, readNumber("tauC")) * 1e-6;
+      const l = Math.max(0, readNumber("tauL")) * 1e-3;
+      const rcTau = r * c;
+      const rlTau = r > 0 ? l / r : NaN;
+      const rcFc = rcTau > 0 ? 1 / (2 * Math.PI * rcTau) : NaN;
+      const rlFc = rlTau > 0 ? 1 / (2 * Math.PI * rlTau) : NaN;
+
+      renderResults("tauResults", [
+        { label: "RC Time Constant", value: MATH.fmt(rcTau, 8, "s"), className: "accent" },
+        { label: "RC Cutoff", value: MATH.fmt(rcFc, 8, "Hz") },
+        { label: "RL Time Constant", value: MATH.fmt(rlTau, 8, "s") },
+        { label: "RL Cutoff", value: MATH.fmt(rlFc, 8, "Hz") }
+      ]);
+    }
+
+    /* ======================================================================
+       SIGNALS
+       ====================================================================== */
+
+    function solveFrequency() {
+      const value = Math.max(0, readNumber("freqValue"));
+      const mode = $("freqMode").value;
+      let hz;
+      if (mode === "hz") hz = value;
+      if (mode === "period") hz = value > 0 ? 1 / value : NaN;
+      if (mode === "omega") hz = value / (2 * Math.PI);
+      const period = hz > 0 ? 1 / hz : NaN;
+      const omega = 2 * Math.PI * hz;
+
+      renderResults("freqResults", [
+        { label: "Frequency", value: MATH.fmt(hz, 8, "Hz"), className: "accent" },
+        { label: "Period", value: MATH.fmt(period, 8, "s") },
+        { label: "Angular Frequency", value: MATH.fmt(omega, 8, "rad/s") }
+      ]);
+    }
+
+    function solvePWM() {
+      const voltage = Math.max(0, readNumber("pwmVoltage"));
+      const duty = MATH.clamp(readNumber("pwmDuty", 50), 0, 100) / 100;
+      const frequency = Math.max(0, readNumber("pwmFreq"));
+      const period = frequency > 0 ? 1 / frequency : NaN;
+      const highTime = period * duty;
+      const lowTime = period * (1 - duty);
+      const average = voltage * duty;
+      const sineEquivalentRMS = voltage * Math.sqrt(duty);
+
+      renderResults("pwmResults", [
+        { label: "Average Voltage", value: MATH.fmt(average, 8, "V"), className: "accent" },
+        { label: "Period", value: MATH.fmt(period * 1000, 8, "ms") },
+        { label: "High Time", value: MATH.fmt(highTime * 1e6, 8, "µs") },
+        { label: "Low Time", value: MATH.fmt(lowTime * 1e6, 8, "µs") },
+        { label: "PWM RMS", value: MATH.fmt(sineEquivalentRMS, 8, "V") }
+      ]);
+    }
+
+    function solveDb() {
+      const ratio = Math.max(0, readNumber("dbRatio"));
+      const mode = $("dbMode").value;
+      const inputDb = readNumber("dbValue");
+      const dbFromRatio = mode === "voltage"
+        ? (ratio > 0 ? 20 * Math.log10(ratio) : NaN)
+        : (ratio > 0 ? 10 * Math.log10(ratio) : NaN);
+      const ratioFromDb = mode === "voltage"
+        ? 10 ** (inputDb / 20)
+        : 10 ** (inputDb / 10);
+
+      renderResults("dbResults", [
+        { label: "dB from Ratio", value: MATH.fmt(dbFromRatio, 8, "dB"), className: "accent" },
+        { label: "Ratio from dB", value: MATH.fmt(ratioFromDb, 8) }
+      ]);
+    }
+
+    function solvePhaseShift() {
+      const frequency = Math.max(0, readNumber("phaseFreq"));
+      const timeMs = readNumber("phaseTime");
+      const degrees = readNumber("phaseDeg");
+      const fromTime = timeMs * frequency * 360 / 1000;
+      const fromDegrees = frequency > 0 ? degrees / 360 / frequency * 1000 : NaN;
+
+      renderResults("phaseResults", [
+        { label: "Phase from Time", value: MATH.fmt(fromTime, 8, "°"), className: "accent" },
+        { label: "Time from Phase", value: MATH.fmt(fromDegrees, 8, "ms") },
+        { label: "Period", value: MATH.fmt(frequency > 0 ? 1000 / frequency : NaN, 8, "ms") }
+      ]);
+    }
+
+    /* ======================================================================
+       LIGHTING
+       ====================================================================== */
+
+    function solveLighting() {
+      const length = Math.max(0, readNumber("lightLength"));
+      const width = Math.max(0, readNumber("lightWidth"));
+      const lux = Math.max(0, readNumber("lightLux"));
+      const uf = MATH.clamp(readNumber("lightUtil", 70), 1, 100) / 100;
+      const mf = MATH.clamp(readNumber("lightMaint", 80), 1, 100) / 100;
+      const luminaireLumens = Math.max(1, readNumber("lightLuminaire", 4000));
+      const area = length * width;
+      const requiredLumens = area * lux / (uf * mf);
+      const luminaires = Math.ceil(requiredLumens / luminaireLumens);
+
+      renderResults("lightResults", [
+        { label: "Area", value: MATH.fmt(area, 7, "m²"), className: "accent" },
+        { label: "Required Lumens", value: MATH.fmt(requiredLumens, 7, "lm") },
+        { label: "Approx. Luminaires", value: String(luminaires) },
+        { label: "Installed Lumens", value: MATH.fmt(luminaires * luminaireLumens, 7, "lm") },
+        { label: "Average Installed Lux", value: MATH.fmt(luminaires * luminaireLumens * uf * mf / Math.max(area, 1e-9), 7, "lux") }
+      ]);
+    }
+
+    function solveLED() {
+      const supply = Math.max(0, readNumber("ledSupply"));
+      const forward = Math.max(0, readNumber("ledForward"));
+      const current = Math.max(0.001, readNumber("ledCurrent")) / 1000;
+      const count = Math.max(1, Math.floor(readNumber("ledCount", 1)));
+      const margin = Math.max(0, readNumber("ledMargin", 100)) / 100;
+      const drop = supply - forward * count;
+      const resistance = drop > 0 ? drop / current : NaN;
+      const resistorPower = drop > 0 ? drop * current : NaN;
+      const ratedPower = resistorPower * (1 + margin);
+
+      renderResults("ledResults", [
+        { label: "Resistor Drop", value: MATH.fmt(drop, 7, "V"), className: "accent" },
+        { label: "Resistor", value: MATH.fmt(resistance, 7, "Ω") },
+        { label: "Resistor Dissipation", value: MATH.fmt(resistorPower, 7, "W") },
+        { label: "Suggested Rated Power", value: MATH.fmt(ratedPower, 7, "W") }
+      ]);
+    }
+
+    /* ======================================================================
+       UNIT CONVERTER
+       ====================================================================== */
+
+    function populateUnitFamilies() {
+      const family = $("unitFamily");
+      family.replaceChildren();
+      Object.entries(UNIT_FAMILIES).forEach(([key, definition]) => {
+        const option = document.createElement("option");
+        option.value = key;
+        option.textContent = definition.label;
+        family.append(option);
+      });
+    }
+
+    function populateUnitOptions(selectId, familyKey) {
+      const select = $(selectId);
+      select.replaceChildren();
+      Object.keys(UNIT_FAMILIES[familyKey].units).forEach((unit) => {
+        const option = document.createElement("option");
+        option.value = unit;
+        option.textContent = unit;
+        select.append(option);
+      });
+    }
+
+    function solveUnitConversion() {
+      const familyKey = $("unitFamily").value;
+      const family = UNIT_FAMILIES[familyKey];
+      const value = readNumber("unitValue");
+      const from = family.units[$("unitFrom").value];
+      const to = family.units[$("unitTo").value];
+      const base = value * from;
+      const result = base / to;
+      setText("unitResult", MATH.fmt(result, 10));
+    }
+
+    function populateQuickConverter() {
+      const family = UNIT_FAMILIES.power;
+      const from = $("convFrom");
+      const to = $("convTo");
+      [from, to].forEach((select) => select.replaceChildren());
+      Object.keys(family.units).forEach((unit) => {
+        const a = document.createElement("option");
+        const b = document.createElement("option");
+        a.value = b.value = unit;
+        a.textContent = b.textContent = unit;
+        from.append(a);
+        to.append(b);
+      });
+      from.value = "W";
+      to.value = "kW";
+      solveQuickConversion();
+    }
+
+    function solveQuickConversion() {
+      const value = readNumber("convValue");
+      const from = UNIT_FAMILIES.power.units[$("convFrom").value];
+      const to = UNIT_FAMILIES.power.units[$("convTo").value];
+      setText("convResult", MATH.fmt(value * from / to, 10));
+    }
+
+    function populateReferenceTables() {
+      $("prefixTable").innerHTML = APP.prefixes
+        .map(([name, symbol, factor]) => `<tr><td>${name}</td><td>${symbol}</td><td>${factor.toExponential()}</td></tr>`)
+        .join("");
+
+      $("breakerTable").innerHTML = APP.breakerSizes
+        .map((value) => `<tr><td>${value}</td><td>${value} A</td></tr>`)
+        .join("");
+
+      $("awgTable").innerHTML = APP.cableSizes
+        .slice(0, 18)
+        .map((area) => {
+          const nearest = AWG_TABLE
+            .map(([awg, awgArea]) => ({ awg, awgArea, error: Math.abs(awgArea - area) }))
+            .sort((a, b) => a.error - b.error)[0];
+          return `<tr><td>${area} mm²</td><td>≈ AWG ${nearest.awg}</td></tr>`;
+        })
+        .join("");
+    }
+
+    /* ======================================================================
+       REFERENCE UI / NAVIGATION
+       ====================================================================== */
+
+    function setupTabs() {
+      document.querySelectorAll(".tab").forEach((tab) => {
+        tab.addEventListener("click", () => {
+          document.querySelectorAll(".tab").forEach((button) => button.classList.remove("active"));
+          document.querySelectorAll(".tool-panel").forEach((panel) => panel.classList.remove("active"));
+          tab.classList.add("active");
+          $(`panel-${tab.dataset.panel}`).classList.add("active");
+        });
+      });
+    }
+
+    function setupMode() {
+      $("modeCalc").addEventListener("click", () => {
+        $("calculatorApp").classList.remove("hidden");
+        $("referenceApp").classList.add("hidden");
+        $("modeCalc").className = "btn";
+        $("modeRef").className = "btn secondary";
+      });
+
+      $("modeRef").addEventListener("click", () => {
+        $("calculatorApp").classList.add("hidden");
+        $("referenceApp").classList.remove("hidden");
+        $("modeCalc").className = "btn secondary";
+        $("modeRef").className = "btn";
+      });
+    }
+
+    /* ======================================================================
+       EVENTS / INITIALIZATION
+       ====================================================================== */
+
+    function bindLive(ids, handler) {
+      ids.forEach((id) => {
+        const element = $(id);
+        if (!element) return;
+        element.addEventListener("input", handler);
+        element.addEventListener("change", handler);
+      });
+    }
+
+    function initSelectors() {
+      APP.cableSizes.forEach((size) => {
+        const option = document.createElement("option");
+        option.value = size;
+        option.textContent = `${size} mm²`;
+        $("cableSize").append(option);
+      });
+      $("cableSize").value = "2.5";
+
+      AWG_TABLE.forEach(([awg, area], index) => {
+        const option = document.createElement("option");
+        option.value = index;
+        option.textContent = `AWG ${awg} - ${area} mm²`;
+        $("awgInput").append(option);
+      });
+
+      APP.cableSizes.forEach((area) => {
+        const option = document.createElement("option");
+        option.value = area;
+        option.textContent = `${area} mm²`;
+        $("awgMetric").append(option);
+      });
+
+      populateUnitFamilies();
+      const familyKey = $("unitFamily").value;
+      populateUnitOptions("unitFrom", familyKey);
+      populateUnitOptions("unitTo", familyKey);
+      populateQuickConverter();
+    }
+
+    function bindEvents() {
+      $("quickSolve").addEventListener("click", solveQuick);
+      $("quickClear").addEventListener("click", () => {
+        ["quickV", "quickI", "quickR", "quickP", "quickPF"].forEach((id) => $(id).value = "");
+        $("quickPhase").value = "single";
+        solveQuick();
+      });
+
+      $("ohmSolve").addEventListener("click", solveOhm);
+      $("ohmFillPower").addEventListener("click", () => {
+        solveOhm();
+        const v = Number($("ohmV").value);
+        const i = Number($("ohmI").value);
+        if (Number.isFinite(v) && Number.isFinite(i)) {
+          $("quickV").value = v;
+          $("quickI").value = i;
+          $("quickP").value = v * i;
+          solveQuick();
+        }
+      });
+
+      bindLive(["quickV", "quickI", "quickR", "quickP", "quickPF", "quickPhase"], solveQuick);
+      bindLive(["acVoltage", "acCurrent", "acPf", "acFreq", "acType", "acVll"], solveACPower);
+      bindLive(["rmsValue", "rmsMode"], solveRMS);
+      bindLive(["threeVll", "threeIline", "threeConnection"], solveThreePhase);
+      bindLive(["triP", "triQ", "triS"], solvePowerTriangle);
+      $("triSolve").addEventListener("click", solvePowerTriangle);
+      bindLive(["energyPower", "energyHours", "energyDays", "energyTariff", "energyEfficiency", "energyFixed"], solveEnergy);
+      bindLive(["heatV", "heatR", "heatTime"], solveHeatingElement);
+
+      $("addLoad").addEventListener("click", () => {
+        loads.push({ name: "New load", qty: 1, watts: 100, pf: 1, demand: 1 });
+        renderLoads();
+        solveLoadSchedule();
+      });
+      $("clearLoads").addEventListener("click", () => {
+        loads = [];
+        renderLoads();
+        solveLoadSchedule();
+      });
+      bindLive(["loadVoltage", "loadPhase", "loadDemand"], solveLoadSchedule);
+
+      bindLive([
+        "cableVoltage", "cableCurrent", "cableLength", "cableSize", "cableMaterial",
+        "cableSystem", "cablePF", "cableReactance", "cableTempFactor"
+      ], solveCableDrop);
+      bindLive([
+        "sizingV", "sizingI", "sizingLength", "sizingDrop", "sizingMaterial", "sizingSystem"
+      ], solveCableSizing);
+      bindLive(["awgInput", "awgMetric"], solveAWG);
+      bindLive(["busCurrent", "busDensity", "busWidth"], solveBusbar);
+
+      bindLive([
+        "motorPower", "motorEff", "motorPf", "motorVoltage", "motorFreq", "motorPole",
+        "motorSlip", "motorStartup"
+      ], solveMotor);
+      bindLive(["torquePower", "torqueRPM"], solveTorque);
+      bindLive(["inrushFla", "inrushMultiplier"], solveInrush);
+
+      bindLive(["txKva", "txPrimary", "txSecondary", "txPhase", "txEff", "txPf"], solveTransformer);
+      bindLive(["ratioV1", "ratioV2", "ratioN1"], solveTransformerRatio);
+      bindLive(["faultV", "faultZ", "faultPhase"], solveFaultCurrent);
+
+      bindLive(["protectLoad", "protectContinuous", "protectMargin"], solveProtection);
+      bindLive(["genKw", "genPf", "genMargin", "genVoltage", "genPhase", "genSpeed"], solveGenerator);
+      bindLive(["massLength", "massArea", "massCurrent", "massMaterial", "massTime"], solveConductorMass);
+
+      bindLive(["batV", "batAh", "batLoad", "batEff", "batDod", "batVoltageNom"], solveBattery);
+      bindLive(["bankV", "bankAh", "bankSeries", "bankParallel", "bankLoad"], solveBatteryBank);
+      bindLive(["upsW", "upsPf", "upsMargin"], solveUPS);
+
+      $("resistorSolve").addEventListener("click", solveResistors);
+      $("capacitorSolve").addEventListener("click", solveCapacitors);
+      bindLive(["pfcKw", "pfcFrom", "pfcTo", "pfcVoltage", "pfcPhase", "pfcFreq"], solvePFC);
+      bindLive(["tauR", "tauC", "tauL"], solveTimeConstant);
+
+      bindLive(["freqValue", "freqMode"], solveFrequency);
+      bindLive(["pwmVoltage", "pwmDuty", "pwmFreq"], solvePWM);
+      $("dbSolve").addEventListener("click", solveDb);
+      bindLive(["phaseFreq", "phaseTime", "phaseDeg"], solvePhaseShift);
+
+      bindLive([
+        "lightLength", "lightWidth", "lightLux", "lightUtil", "lightMaint", "lightLuminaire"
+      ], solveLighting);
+      bindLive(["ledSupply", "ledForward", "ledCurrent", "ledCount", "ledMargin"], solveLED);
+
+      $("unitFamily").addEventListener("change", () => {
+        const familyKey = $("unitFamily").value;
+        populateUnitOptions("unitFrom", familyKey);
+        populateUnitOptions("unitTo", familyKey);
+        solveUnitConversion();
+      });
+      bindLive(["unitValue", "unitFrom", "unitTo"], solveUnitConversion);
+      bindLive(["convValue", "convFrom", "convTo"], solveQuickConversion);
+
+      $("clearValues").addEventListener("click", clearStoredValues);
+      $("rememberValues").addEventListener("change", () => {
+        toast($("rememberValues").checked ? "Remember values enabled." : "Remember values disabled.", "warn");
+      });
+    }
+
+    function initialSolve() {
+      solveQuick();
+      solveACPower();
+      solveRMS();
+      solveThreePhase();
+      solvePowerTriangle();
+      solveEnergy();
+      solveHeatingElement();
+      solveLoadSchedule();
+      solveCableDrop();
+      solveCableSizing();
+      solveAWG();
+      solveBusbar();
+      solveMotor();
+      solveTorque();
+      solveInrush();
+      solveTransformer();
+      solveTransformerRatio();
+      solveFaultCurrent();
+      solveProtection();
+      solveGenerator();
+      solveConductorMass();
+      solveBattery();
+      solveBatteryBank();
+      solveUPS();
+      solveResistors();
+      solveCapacitors();
+      solvePFC();
+      solveTimeConstant();
+      solveFrequency();
+      solvePWM();
+      solveDb();
+      solvePhaseShift();
+      solveLighting();
+      solveLED();
+      solveUnitConversion();
+    }
+
+    function runSelfTest() {
+      const tests = [
+        ["Ohm", MATH.safeDivide(230, 10), 23],
+        ["3φ power", MATH.sqrt3 * 400 * 10 * 0.9 / 1000, 6.235382907],
+        ["Torque", 9550 * 7.5 / 1450, 49.39655172],
+        ["RC tau", 1000 * 100e-6, 0.1],
+        ["Energy", 1 * 8 * 30, 240]
+      ];
+
+      const failures = tests.filter(([, actual, expected]) => Math.abs(actual - expected) > 1e-6);
+      if (failures.length) {
+        console.error("Aznur Electrical Studio self-test failed", failures);
+        return false;
+      }
+      console.info("Aznur Electrical Studio self-test passed:", tests.length, "tests");
+      return true;
+    }
+
+    function init() {
+      setupTabs();
+      setupMode();
+      initSelectors();
+      createComponentInputs("resistorInputs", "R", "Ω");
+      createComponentInputs("capacitorInputs", "C", "µF");
+      restoreValues();
+      renderLoads();
+      populateReferenceTables();
+      bindEvents();
+      bindRemembered([
+        "quickV", "quickI", "quickR", "quickP", "quickPF", "quickPhase", "energyTariff",
+        "loadVoltage", "loadPhase", "cableVoltage", "cableCurrent", "cableLength", "cableSize",
+        "cableMaterial", "sizingV", "sizingI", "sizingLength", "sizingDrop", "motorVoltage",
+        "motorFreq", "txPrimary", "txSecondary", "batV", "batAh", "upsW", "upsPf"
+      ]);
+      initialSolve();
+      runSelfTest();
+    }
+
+    window.AznurElectrical = Object.freeze({
+      APP,
+      AWG_TABLE,
+      UNIT_FAMILIES,
+      MATH,
+      RESISTIVITY
+    });
+
+    init();
+  </script>
+</body>
+</html>
